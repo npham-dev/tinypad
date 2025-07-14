@@ -102,27 +102,42 @@ https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-bei
 
   /* Code and preformatted text styles */
   code {
-    background-color: var(--primary-default);
-    border-radius: var(--border-radius-default);
-    color: var(--black);
-    font-size: 0.85rem;
     padding: 0.25em 0.3em;
+    display: inline;
+    border-radius: var(--border-radius-6);
+    padding: 1px var(--space-2);
+    font-family: var(--font-family-code);
+    background-color: var(--black);
+    color: var(--foreground-dimmer);
+    vertical-align: top;
   }
 
   pre {
-    background: var(--black);
+    background-color: var(--black);
     border-radius: var(--border-radius-default);
     color: var(--white);
     font-family: var(--font-family-code);
     margin: 1.5rem 0;
     padding: 0.75rem 1rem;
+    color: var(--foreground-dimmer);
 
     code {
       background: none;
+      border: none;
       color: inherit;
       font-size: 0.8rem;
       padding: 0;
     }
+  }
+
+  a {
+    font-family: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    color: var(--primary-stronger);
+    text-decoration: underline;
+    display: inline-block;
+    vertical-align: top;
   }
 
   blockquote {
