@@ -1,9 +1,8 @@
-import { WebSocketServer, type WebSocket } from "ws";
 import http from "http";
 import * as map from "lib0/map";
-import z from "zod";
-import { MesssageType, parseMessage } from "./message-schema";
+import { WebSocketServer, type WebSocket } from "ws";
 import { tryCatch } from "./lib/try-catch";
+import { MesssageType, parseMessage } from "./message-schema";
 
 const wsReadyStateConnecting = 0;
 const wsReadyStateOpen = 1;
@@ -90,7 +89,7 @@ wss.on("connection", (conn) => {
               const topic = map.setIfUndefined(
                 topics,
                 topicName,
-                () => new Set()
+                () => new Set(),
               );
               topic.add(conn);
               // add topic to conn

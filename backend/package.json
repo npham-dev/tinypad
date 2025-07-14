@@ -7,7 +7,8 @@
     "build": "tsc --outDir build",
     "typecheck": "tsc --noEmit",
     "dev": "tsx watch ./app/server.js",
-    "start": "node ./build/app/server.js"
+    "start": "node ./build/app/server.js",
+    "fmt": "prettier --write ."
   },
   "keywords": [],
   "author": "",
@@ -17,6 +18,7 @@
     "@types/node": "^24.0.13",
     "@types/ws": "^8.18.1",
     "prettier": "^3.6.2",
+    "prettier-plugin-organize-imports": "^4.1.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {
