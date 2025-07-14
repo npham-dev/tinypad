@@ -1,15 +1,16 @@
 import { createCookie } from "react-router";
 import z from "zod";
-import { randomName } from "./lib/random-name";
-import { tryCatch } from "./lib/try-catch";
+import { tryCatch } from "../lib/try-catch";
 
 const schema = z.object({
   name: z.string(),
+  token: z.string().optional(),
 });
 
-const userCookie = createCookie("tinypad.user", {
+export const userCookie = createCookie("tinypad.user", {
   httpOnly: true,
   secure: true,
+  secrets: [process.env.COOKIE_SECRET!],
   maxAge: 604_800, // one week
 });
 
@@ -23,10 +24,13 @@ export async function getUserCookie(request: Request) {
   return parseResult.data;
 }
 
-export async function randomUserCookie() {
+export async function setUserCookie(name: string, token: string) {
   return {
     headers: {
-      "Set-Cookie": await userCookie.serialize({ name: randomName() }),
+      "Set-Cookie": await userCookie.serialize({
+        name,
+        token,
+      }),
     },
   };
 }

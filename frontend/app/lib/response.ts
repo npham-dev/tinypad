@@ -5,10 +5,17 @@ export function notFound() {
   });
 }
 
-export function serverError() {
+export function internalServerError() {
   return new Response(null, {
     status: 500,
     statusText: "Internal server error",
+  });
+}
+
+export function notAuthorized() {
+  return new Response(null, {
+    status: 401,
+    statusText: "Unathorized",
   });
 }
 

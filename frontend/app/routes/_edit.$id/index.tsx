@@ -18,11 +18,18 @@ import bcrypt from "bcrypt";
 import { db } from "database";
 import { pads } from "database/schema";
 import { eq } from "drizzle-orm";
-import { notFound, serverError, standardResponse } from "~/lib/response";
+import {
+  internalServerError,
+  notAuthorized,
+  notFound,
+  standardResponse,
+} from "~/lib/response";
 import { tryCatch } from "~/lib/try-catch";
+import { canManagePad } from "~/services/access-control.server";
+import { getUserCookie } from "~/services/cookies.server";
 import { renameSchema } from "./action-schema";
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ request, params }: Route.LoaderArgs) {
   const result = await tryCatch(
     db
       .select({
@@ -37,10 +44,27 @@ export async function loader({ params }: Route.LoaderArgs) {
   if (result.error !== null || result.data.length === 0) {
     throw notFound();
   }
-  return {
-    ...result.data[0],
-    password: !!result.data[0].password,
-  };
+
+  const pad = result.data[0];
+  const userCookie = await getUserCookie(request);
+
+  if (
+    pad.public ||
+    (userCookie &&
+      userCookie.token &&
+      (await canManagePad(userCookie.token, params.id)))
+  ) {
+    return {
+      name: userCookie?.name,
+      token: userCookie?.token,
+      pad: {
+        ...pad,
+        password: !!pad.password,
+      },
+    };
+  }
+
+  throw notAuthorized();
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -59,7 +83,7 @@ export async function action({ request }: Route.ActionArgs) {
       );
       if (passwordResult.error !== null) {
         // @todo more descriptive errors than just 500 (use standard response + enums)
-        throw serverError();
+        throw internalServerError();
       }
 
       const updateResult = await tryCatch(
@@ -74,7 +98,7 @@ export async function action({ request }: Route.ActionArgs) {
           .where(eq(pads.id, submission.value.id)),
       );
       if (updateResult.error !== null) {
-        throw serverError();
+        throw internalServerError();
       }
 
       return standardResponse({
@@ -102,7 +126,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                 <Text color="dimmest" className="pr-1.5 pl-3">
                   /
                 </Text>
-                <RenamePopover {...loaderData} />
+                <RenamePopover {...loaderData.pad} />
               </View>
             </View>
           </View>

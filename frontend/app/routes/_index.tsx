@@ -1,9 +1,14 @@
 import { db } from "database";
 import { pads } from "database/schema";
 import { redirect } from "react-router";
-import { randomPadName } from "~/lib/random-name";
-import { serverError } from "~/lib/response";
+import { randomName, randomPadName } from "~/lib/random-name";
+import { internalServerError } from "~/lib/response";
 import { tryCatch } from "~/lib/try-catch";
+import {
+  addPadToToken,
+  getPadsFromToken,
+} from "~/services/access-control.server";
+import { getUserCookie, setUserCookie } from "~/services/cookies.server";
 import type { Route } from "./+types/_index";
 
 export function meta({}: Route.MetaArgs) {
@@ -16,7 +21,7 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader() {
+export async function loader({ request }: Route.LoaderArgs) {
   const result = await tryCatch(
     db
       .insert(pads)
@@ -24,10 +29,16 @@ export async function loader() {
       .returning({ id: pads.id }),
   );
   if (result.error !== null) {
-    throw serverError();
+    throw internalServerError();
   }
 
   const id = result.data[0].id;
-  // @todo create jwt token w/ allowed document as id
-  return redirect(`/${id}`);
+  const existingUserCookie = await getUserCookie(request);
+  return redirect(
+    `/${id}`,
+    await setUserCookie(
+      existingUserCookie?.name || randomName(),
+      addPadToToken(await getPadsFromToken(existingUserCookie?.token), id),
+    ),
+  );
 }

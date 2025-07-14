@@ -1,9 +1,3 @@
-import { standardResponse } from "~/lib/response";
+import type { Route } from "./+types/api.pad.$id";
 
-export function loader() {
-  return standardResponse({
-    message: "ok",
-    success: true,
-    data: "hrmm",
-  });
-}
+export async function action({ request, params }: Route.ActionArgs) {}

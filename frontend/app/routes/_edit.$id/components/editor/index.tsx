@@ -23,6 +23,7 @@ export const Editor = ({}: EditorProps) => {
       StarterKit.configure({
         // https://tiptap.dev/docs/collaboration/getting-started/install
         undoRedo: false,
+        link: false,
       }),
       // Collaboration.configure({
       //   document: ydoc,

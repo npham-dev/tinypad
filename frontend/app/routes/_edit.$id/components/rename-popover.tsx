@@ -11,6 +11,7 @@ import {
   RiLockIcon,
   Text,
   View,
+  type ButtonGroupProps,
 } from "natmfat";
 import { tokens } from "natmfat/lib/tokens";
 import { useRef, useState } from "react";
@@ -20,6 +21,7 @@ import {
   LabeledMultilineInput,
 } from "~/components/labeled-input";
 import { renameSchema } from "../action-schema";
+import { useDirty } from "../hooks/use-dirty";
 
 type RenamePopoverProps = {
   name: string;
@@ -32,6 +34,8 @@ export function RenamePopover(props: RenamePopoverProps) {
   const params = useParams();
 
   const formRef = useRef<HTMLFormElement>(null);
+  const [open, setOpen] = useState(false);
+  const { dirty, listeners } = useDirty({ resetKey: open });
   const [form, fields] = useForm({
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: renameSchema });
@@ -43,7 +47,8 @@ export function RenamePopover(props: RenamePopoverProps) {
   return (
     <Popover
       onOpenChange={(open) => {
-        if (!open) {
+        setOpen(open);
+        if (!open && dirty.current) {
           formRef.current?.requestSubmit();
         }
       }}
@@ -75,6 +80,7 @@ export function RenamePopover(props: RenamePopoverProps) {
             autoComplete="off"
             required
             defaultValue={props.name}
+            {...listeners}
           />
           <LabeledMultilineInput
             label="Description"
@@ -84,6 +90,7 @@ export function RenamePopover(props: RenamePopoverProps) {
             maxLength={140}
             defaultValue={props.description}
             className="min-h-18 resize-none"
+            {...listeners}
           />
           <View className="gap-1">
             <LabeledInput
@@ -93,6 +100,7 @@ export function RenamePopover(props: RenamePopoverProps) {
               errorId={fields.password.errorId}
               autoComplete="off"
               type="password"
+              {...listeners}
             />
             {props.password ? (
               <Text color="dimmer" size="small" multiline>
@@ -101,21 +109,28 @@ export function RenamePopover(props: RenamePopoverProps) {
               </Text>
             ) : null}
           </View>
-          <PrivacySettings defaultValue={props.public} />
+          <PrivacySettings defaultValue={props.public} {...listeners} />
         </Form>
       </PopoverContent>
     </Popover>
   );
 }
 
-function PrivacySettings(props: { defaultValue: boolean }) {
-  const [privacy, setPrivacy] = useState(
-    props.defaultValue ? "public" : "private",
-  );
-
+function PrivacySettings({
+  defaultValue,
+  ...props
+}: { defaultValue: boolean } & Omit<ButtonGroupProps, "defaultValue">) {
+  const [privacy, setPrivacy] = useState(defaultValue ? "public" : "private");
   return (
     <View className="gap-1">
-      <ButtonGroup value={privacy} onChange={setPrivacy}>
+      <ButtonGroup
+        value={privacy}
+        {...props}
+        onChange={(value) => {
+          props.onChange?.(value);
+          setPrivacy(value);
+        }}
+      >
         <ButtonGroupItem value="public">
           <RiGlobalIcon />
           Public
