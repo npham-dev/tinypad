@@ -1,11 +1,21 @@
-import { generate } from "random-words";
+import {
+  adjectives,
+  animals,
+  colors,
+  names,
+  uniqueNamesGenerator,
+} from "unique-names-generator";
 
-export const randomName = () => {
-  const words = generate({
-    exactly: 3,
-    minLength: 5,
-    wordsPerString: 1,
-    formatter: (word) => word.slice(0, 1).toUpperCase().concat(word.slice(1)),
+export const randomPadName = () =>
+  uniqueNamesGenerator({
+    dictionaries: [adjectives, colors, animals],
+    separator: "",
+    style: "capital",
   });
-  return Array.isArray(words) ? words.join("") : words;
-};
+
+export const randomName = () =>
+  uniqueNamesGenerator({
+    dictionaries: [adjectives, names, names],
+    separator: "",
+    style: "capital",
+  });

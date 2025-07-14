@@ -19,5 +19,8 @@ export function standardResponse<T>(args: {
 }) {
   return new Response(JSON.stringify(args), {
     status: args.success ? 200 : 500,
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 }
