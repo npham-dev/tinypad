@@ -7,3 +7,8 @@ export const renameSchema = z.object({
   privacy: z.enum(["public", "private"]).optional(),
   password: z.string().max(80).optional(),
 });
+
+export const updateSchema = z.object({
+  id: z.string({ message: "A pad id is required" }),
+  update: z.instanceof(Uint8Array),
+});

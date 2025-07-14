@@ -12,11 +12,9 @@ import { RichTextLink } from "./rich-text-link";
 //   password: "test",
 // });
 
-type EditorProps = {
-  content: string;
-};
+type EditorProps = {};
 
-export const Editor = ({ content }: EditorProps) => {
+export const Editor = ({}: EditorProps) => {
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -30,7 +28,7 @@ export const Editor = ({ content }: EditorProps) => {
       //   document: ydoc,
       // }),
     ],
-    content,
+    content: "",
   });
 
   return <EditorContent editor={editor} className="h-full" />;

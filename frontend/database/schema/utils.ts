@@ -10,3 +10,13 @@ export const timestamp = {
     .notNull()
     .$onUpdate(() => new Date()),
 };
+
+export const bytea = t.customType<{
+  data: Buffer;
+  default: false;
+  notNull: false;
+}>({
+  dataType() {
+    return "bytea";
+  },
+});

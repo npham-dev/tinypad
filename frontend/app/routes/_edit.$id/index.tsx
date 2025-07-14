@@ -27,7 +27,6 @@ export async function loader({ params }: Route.LoaderArgs) {
     db
       .select({
         name: pads.name,
-        body: pads.body,
         description: pads.description,
         password: pads.password,
         public: pads.public,
@@ -130,7 +129,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
               "color-mix(in srgb, var(--interactive-background) 60%, var(--surface-background))",
           }}
         >
-          <ClientOnly>{() => <Editor content={loaderData.body} />}</ClientOnly>
+          <ClientOnly>{() => <Editor />}</ClientOnly>
         </View>
       </View>
     </View>

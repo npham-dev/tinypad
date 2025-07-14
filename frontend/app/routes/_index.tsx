@@ -4,7 +4,7 @@ import { redirect } from "react-router";
 import { randomPadName } from "~/lib/random-name";
 import { serverError } from "~/lib/response";
 import { tryCatch } from "~/lib/try-catch";
-import type { Route } from "./+types/home";
+import type { Route } from "./+types/_index";
 
 export function meta({}: Route.MetaArgs) {
   return [
