@@ -14,6 +14,7 @@ import { Editor } from "./components/editor";
 import { RenamePopover } from "./components/rename-popover";
 
 import { parseWithZod } from "@conform-to/zod";
+import bcrypt from "bcrypt";
 import { db } from "database";
 import { pads } from "database/schema";
 import { eq } from "drizzle-orm";
@@ -27,6 +28,7 @@ export async function loader({ params }: Route.LoaderArgs) {
       .select({
         name: pads.name,
         body: pads.body,
+        description: pads.description,
         password: pads.password,
         public: pads.public,
       })
@@ -36,7 +38,10 @@ export async function loader({ params }: Route.LoaderArgs) {
   if (result.error !== null || result.data.length === 0) {
     throw notFound();
   }
-  return result.data[0];
+  return {
+    ...result.data[0],
+    password: !!result.data[0].password,
+  };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -48,19 +53,28 @@ export async function action({ request }: Route.ActionArgs) {
         return submission.reply();
       }
 
-      const result = await tryCatch(
+      const passwordResult = await tryCatch(
+        submission.value.password
+          ? bcrypt.hash(submission.value.password, 10)
+          : Promise.resolve(undefined),
+      );
+      if (passwordResult.error !== null) {
+        // @todo more descriptive errors than just 500 (use standard response + enums)
+        throw serverError();
+      }
+
+      const updateResult = await tryCatch(
         db
           .update(pads)
           .set({
             name: submission.value.title,
             description: submission.value.description || "",
-            password: submission.value.password || "",
+            password: passwordResult.data,
             public: submission.value.privacy === "public",
           })
           .where(eq(pads.id, submission.value.id)),
       );
-
-      if (result.error !== null) {
+      if (updateResult.error !== null) {
         throw serverError();
       }
 

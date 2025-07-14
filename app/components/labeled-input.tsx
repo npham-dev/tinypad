@@ -1,6 +1,7 @@
 import {
   IconButton,
   Input,
+  MultilineInput,
   RiEyeCloseIcon,
   RiEyeIcon,
   Text,
@@ -135,6 +136,16 @@ export const Labeled = ({
         </AnimateHeight>
       ) : null}
     </View>
+  );
+};
+
+export const LabeledMultilineInput = (
+  props: Omit<LabeledInputProps, "type">,
+) => {
+  return (
+    <Labeled {...props} asChild>
+      <MultilineInput />
+    </Labeled>
   );
 };
 

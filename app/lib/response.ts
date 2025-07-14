@@ -18,6 +18,6 @@ export function standardResponse<T>(args: {
   data?: T;
 }) {
   return new Response(JSON.stringify(args), {
-    status: 200,
+    status: args.success ? 200 : 500,
   });
 }

@@ -4,7 +4,6 @@ import {
   ButtonGroup,
   ButtonGroupItem,
   Interactive,
-  MultilineInput,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -13,14 +12,19 @@ import {
   Text,
   View,
 } from "natmfat";
+import { tokens } from "natmfat/lib/tokens";
 import { useRef, useState } from "react";
 import { Form, useParams } from "react-router";
-import { Labeled, LabeledInput } from "~/components/labeled-input";
+import {
+  LabeledInput,
+  LabeledMultilineInput,
+} from "~/components/labeled-input";
 import { renameSchema } from "../action-schema";
 
 type RenamePopoverProps = {
   name: string;
-  password: string | null;
+  description: string;
+  password: boolean;
   public: boolean;
 };
 
@@ -48,6 +52,7 @@ export function RenamePopover(props: RenamePopoverProps) {
         <Interactive variant="noFill">
           <View className="flex-row items-center gap-1 px-1.5">
             <Text className="font-medium">{props.name}</Text>
+            {props.public ? null : <RiLockIcon size={tokens.space12} />}
           </View>
         </Interactive>
       </PopoverTrigger>
@@ -71,28 +76,31 @@ export function RenamePopover(props: RenamePopoverProps) {
             required
             defaultValue={props.name}
           />
-          <Labeled
+          <LabeledMultilineInput
             label="Description"
             name={fields.description.name}
             errors={fields.description.errors}
             errorId={fields.description.errorId}
-            asChild
-          >
-            <MultilineInput
-              maxLength={140}
-              defaultValue={fields.description.initialValue}
-              className="min-h-18 resize-none"
-            />
-          </Labeled>
-          <LabeledInput
-            label="Password"
-            name={fields.password.name}
-            errors={fields.password.errors}
-            errorId={fields.password.errorId}
-            autoComplete="off"
-            type="password"
-            defaultValue={props.password || undefined}
+            maxLength={140}
+            defaultValue={props.description}
+            className="min-h-18 resize-none"
           />
+          <View className="gap-1">
+            <LabeledInput
+              label="Password"
+              name={fields.password.name}
+              errors={fields.password.errors}
+              errorId={fields.password.errorId}
+              autoComplete="off"
+              type="password"
+            />
+            {props.password ? (
+              <Text color="dimmer" size="small" multiline>
+                You have a password set, but it cannot be displayed again for
+                security reasons.
+              </Text>
+            ) : null}
+          </View>
           <PrivacySettings defaultValue={props.public} />
         </Form>
       </PopoverContent>
@@ -106,7 +114,7 @@ function PrivacySettings(props: { defaultValue: boolean }) {
   );
 
   return (
-    <View className="gap-2">
+    <View className="gap-1">
       <ButtonGroup value={privacy} onChange={setPrivacy}>
         <ButtonGroupItem value="public">
           <RiGlobalIcon />
