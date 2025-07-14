@@ -1,8 +1,9 @@
-#!/usr/bin/env node
-
-import { WebSocketServer } from "ws";
+import { WebSocketServer, type WebSocket } from "ws";
 import http from "http";
 import * as map from "lib0/map";
+import z from "zod";
+import { MesssageType, parseMessage } from "./message-schema";
+import { tryCatch } from "./lib/try-catch";
 
 const wsReadyStateConnecting = 0;
 const wsReadyStateOpen = 1;
@@ -14,22 +15,17 @@ const pingTimeout = 30000;
 const port = process.env.PORT || 4444;
 const wss = new WebSocketServer({ noServer: true });
 
-const server = http.createServer((request, response) => {
+const server = http.createServer((_, response) => {
   response.writeHead(200, { "Content-Type": "text/plain" });
   response.end("okay");
 });
 
 /**
  * Map froms topic-name to set of subscribed clients.
- * @type {Map<string, Set<any>>}
  */
-const topics = new Map();
+const topics: Map<string, Set<WebSocket>> = new Map();
 
-/**
- * @param {any} conn
- * @param {object} message
- */
-const send = (conn: any, message: object) => {
+const send = (conn: WebSocket, message: object) => {
   if (
     conn.readyState !== wsReadyStateConnecting &&
     conn.readyState !== wsReadyStateOpen
@@ -45,13 +41,9 @@ const send = (conn: any, message: object) => {
 
 /**
  * Setup a new client
- * @param {any} conn
  */
-const onconnection = (conn: any) => {
-  /**
-   * @type {Set<string>}
-   */
-  const subscribedTopics = new Set();
+wss.on("connection", (conn) => {
+  const subscribedTopics: Set<string> = new Set();
   let closed = false;
   // Check if connection is still alive
   let pongReceived = true;
@@ -82,68 +74,59 @@ const onconnection = (conn: any) => {
     subscribedTopics.clear();
     closed = true;
   });
-  conn.on(
-    "message",
-    /** @param {object} message */ (message: any) => {
-      if (typeof message === "string" || message instanceof Buffer) {
-        message = JSON.parse(String(message));
-      }
-      if (message && message.type && !closed) {
-        switch (message.type) {
-          case "subscribe":
-            /** @type {Array<string>} */ (message.topics || []).forEach(
-              (topicName: string[]) => {
-                if (typeof topicName === "string") {
-                  // add conn to topic
-                  const topic = map.setIfUndefined(
-                    topics,
-                    topicName,
-                    () => new Set()
-                  );
-                  topic.add(conn);
-                  // add topic to conn
-                  subscribedTopics.add(topicName);
-                }
-              }
-            );
-            break;
-          case "unsubscribe":
-            /** @type {Array<string>} */ (message.topics || []).forEach(
-              (topicName: string[]) => {
-                const subs = topics.get(topicName);
-                if (subs) {
-                  subs.delete(conn);
-                }
-              }
-            );
-            break;
-          case "publish":
-            if (message.topic) {
-              const receivers = topics.get(message.topic);
-              if (receivers) {
-                message.clients = receivers.size;
-                receivers.forEach((receiver: any) => send(receiver, message));
-              }
+  conn.on("message", async (rawMessage: unknown) => {
+    const messageResult = await tryCatch(parseMessage(rawMessage));
+    if (messageResult.error !== null) {
+      return;
+    }
+
+    const message = messageResult.data;
+    if (message && message.type && !closed) {
+      switch (message.type) {
+        case MesssageType.SUBSCRIBE:
+          (message.topics || []).forEach((topicName: string) => {
+            if (typeof topicName === "string") {
+              // add conn to topic
+              const topic = map.setIfUndefined(
+                topics,
+                topicName,
+                () => new Set()
+              );
+              topic.add(conn);
+              // add topic to conn
+              subscribedTopics.add(topicName);
             }
-            break;
-          case "ping":
-            send(conn, { type: "pong" });
-        }
+          });
+          break;
+        case MesssageType.UNSUBSCRIBE:
+          (message.topics || []).forEach((topicName: string) => {
+            const subs = topics.get(topicName);
+            if (subs) {
+              subs.delete(conn);
+            }
+          });
+          break;
+        case MesssageType.PUBLISH:
+          if (message.topic) {
+            const receivers = topics.get(message.topic);
+            if (receivers) {
+              message.clients = receivers.size;
+              receivers.forEach((receiver) => send(receiver, message));
+            }
+          }
+          break;
+        case MesssageType.PING:
+          send(conn, { type: "pong" });
       }
     }
-  );
-};
-wss.on("connection", onconnection);
+  });
+});
 
 server.on("upgrade", (request, socket, head) => {
-  // You may check auth of request here..
-  /**
-   * @param {any} ws
-   */
-  const handleAuth = (ws: any) => {
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    // handle auth
     wss.emit("connection", ws, request);
-  };
-  wss.handleUpgrade(request, socket, head, handleAuth);
+  });
 });
 
 server.listen(port);

@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc --outDir build",
     "typecheck": "tsc --noEmit",
-    "start": "nodemon ./app/server.js",
-    "node": "node ./build/app/server.js"
+    "dev": "tsx watch ./app/server.js",
+    "start": "node ./build/app/server.js"
   },
   "keywords": [],
   "author": "",
@@ -16,12 +16,13 @@
   "devDependencies": {
     "@types/node": "^24.0.13",
     "@types/ws": "^8.18.1",
-    "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
     "typescript": "^5.8.3"
   },
   "dependencies": {
     "lib0": "^0.2.109",
-    "ws": "^8.18.3"
+    "tsx": "^4.20.3",
+    "ws": "^8.18.3",
+    "zod": "^4.0.5"
   }
 }
