@@ -18,13 +18,28 @@ https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-bei
 .tiptap {
   outline: none;
   border: none;
+  font-family: var(--font-family-default);
+  height: 100%;
 
   :first-child {
     margin-top: 0;
   }
 
+  ul {
+    list-style-type: disc;
+  }
   ol {
-    list-style: decimal;
+    list-style-type: decimal;
+  }
+  ul ul,
+  ol ul {
+    list-style-type: circle;
+    margin-left: 15px;
+  }
+  ol ol,
+  ul ol {
+    list-style-type: lower-latin;
+    margin-left: 15px;
   }
 
   /* List styles */
@@ -46,33 +61,46 @@ https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-bei
   h4,
   h5,
   h6 {
+    font-weight: var(--font-weight-medium);
     line-height: 1.1;
-    margin-top: 2.5rem;
     text-wrap: pretty;
   }
 
-  h1,
-  h2 {
-    margin-top: 3.5rem;
-    margin-bottom: 1.5rem;
+  /* Text size variants */
+  p,
+  h5,
+  h6 {
+    line-height: var(--line-height-default);
+    font-size: var(--font-size-default);
+    margin-top: var(--space-4);
   }
 
   h1 {
-    font-size: 1.4rem;
+    line-height: var(--line-height-header-big);
+    font-size: var(--font-size-header-big);
+    font-weight: var(--font-weight-medium);
+    margin-top: var(--space-24);
   }
 
   h2 {
-    font-size: 1.2rem;
+    line-height: var(--line-height-header-default);
+    font-size: var(--font-size-header-default);
+    font-weight: var(--font-weight-medium);
+    margin-top: var(--space-24);
   }
 
   h3 {
-    font-size: 1.1rem;
+    line-height: var(--line-height-subhead-big);
+    font-size: var(--font-size-subhead-big);
+    font-weight: var(--font-weight-medium);
+    margin-top: var(--space-16);
   }
 
-  h4,
-  h5,
-  h6 {
-    font-size: 1rem;
+  h4 {
+    line-height: var(--line-height-subhead-default);
+    font-size: var(--font-size-subhead-default);
+    font-weight: var(--font-weight-medium);
+    margin-top: var(--space-8);
   }
 
   /* Code and preformatted text styles */
@@ -88,7 +116,7 @@ https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-bei
     background: var(--black);
     border-radius: var(--border-radius-default);
     color: var(--white);
-    font-family: "JetBrainsMono", monospace;
+    font-family: var(--font-family-code);
     margin: 1.5rem 0;
     padding: 0.75rem 1rem;
 
@@ -101,14 +129,14 @@ https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-bei
   }
 
   blockquote {
-    border-left: 3px solid var(--primary-default);
+    border-left: 2px solid var(--primary-dimmer);
     margin: 1.5rem 0;
     padding-left: 1rem;
   }
 
   hr {
     border: none;
-    border-top: 1px solid var(--primary-default);
+    border-top: 1px solid var(--outline-dimmest);
     margin: 2rem 0;
   }
 }

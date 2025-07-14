@@ -1,7 +1,10 @@
 import {
   Button,
+  Interactive,
   RiArticleIcon,
   RiBookletIcon,
+  RiLock2FillIcon,
+  RiLockIcon,
   RiUserAddIcon,
   Text,
   View,
@@ -23,7 +26,18 @@ export default function Page({ loaderData }: Route.ComponentProps) {
           <View className="flex-row items-center gap-2">
             <View className="flex-row items-center gap-2">
               <RiBookletIcon color={tokens.primaryDefault} />
-              <Text>tinypad</Text>
+              <View className="flex-row items-center">
+                <Text>tinypad</Text>
+                <Text color="dimmest" className="pl-3 pr-1.5">
+                  /
+                </Text>
+                <Interactive variant="noFill">
+                  <View className="flex-row items-center gap-1 px-1.5">
+                    <Text className="font-medium">hocuspocus</Text>
+                    <RiLockIcon size={tokens.space12} />
+                  </View>
+                </Interactive>
+              </View>
             </View>
           </View>
 
@@ -45,7 +59,6 @@ export default function Page({ loaderData }: Route.ComponentProps) {
         <View
           className="rounded-default h-full w-full flex-1 px-4 py-3 overflow-y-auto"
           style={{
-            fontSize: tokens.fontSizeSubheadDefault,
             background:
               "color-mix(in srgb, var(--interactive-background) 60%, var(--surface-background))",
           }}

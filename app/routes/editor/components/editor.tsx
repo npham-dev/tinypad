@@ -40,9 +40,5 @@ export const Editor = () => {
 </blockquote>
 `,
   });
-  return (
-    <>
-      <EditorContent editor={editor} />
-    </>
-  );
+  return <EditorContent editor={editor} className="h-full" />;
 };
