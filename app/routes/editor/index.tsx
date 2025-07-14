@@ -13,16 +13,34 @@ import { tokens } from "natmfat/lib/tokens";
 import type { Route } from "./+types";
 import { Clui } from "./components/clui";
 import { Editor } from "./components/editor";
+import { db } from "database";
+import { pads } from "database/schema";
+import { eq } from "drizzle-orm";
+import { tryCatch } from "~/lib/try-catch";
+
+// @todo password stuff
 
 export async function loader({ params }: Route.LoaderArgs) {
-  return params.id;
+  const result = await tryCatch(
+    db
+      .select({ name: pads.name, body: pads.body })
+      .from(pads)
+      .where(eq(pads.id, params.id)),
+  );
+  if (result.error !== null || result.data.length === 0) {
+    throw new Response(null, {
+      status: 404,
+      statusText: "Not found",
+    });
+  }
+  return result.data[0];
 }
 
 export default function Page({ loaderData }: Route.ComponentProps) {
   return (
     <View className="h-screen">
       <View asChild>
-        <header className="shrink-0 flex-row items-center justify-between p-2">
+        <header className="shrink-0 flex-row items-center justify-between p-2 select-none">
           <View className="flex-row items-center gap-2">
             <View className="flex-row items-center gap-2">
               <RiBookletIcon color={tokens.primaryDefault} />
@@ -33,7 +51,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                 </Text>
                 <Interactive variant="noFill">
                   <View className="flex-row items-center gap-1 px-1.5">
-                    <Text className="font-medium">hocuspocus</Text>
+                    <Text className="font-medium">{loaderData.name}</Text>
                     <RiLockIcon size={tokens.space12} />
                   </View>
                 </Interactive>
@@ -63,7 +81,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
               "color-mix(in srgb, var(--interactive-background) 60%, var(--surface-background))",
           }}
         >
-          <Editor />
+          <Editor content={loaderData.body} />
         </View>
       </View>
     </View>

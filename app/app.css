@@ -20,6 +20,8 @@ https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-bei
   border: none;
   font-family: var(--font-family-default);
   height: 100%;
+  line-height: var(--line-height-default);
+  font-size: var(--font-size-default);
 
   :first-child {
     margin-top: 0;
@@ -28,29 +30,24 @@ https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-bei
   ul {
     list-style-type: disc;
   }
+
   ol {
     list-style-type: decimal;
-  }
-  ul ul,
-  ol ul {
-    list-style-type: circle;
-    margin-left: 15px;
-  }
-  ol ol,
-  ul ol {
-    list-style-type: lower-latin;
-    margin-left: 15px;
   }
 
   /* List styles */
   ul,
   ol {
-    padding: 0 1rem;
-    margin: 1.25rem 1rem 1.25rem 0.4rem;
+    padding: 0 var(--space-16);
 
-    li p {
-      margin-top: 0.25em;
-      margin-bottom: 0.25em;
+    ul {
+      list-style-type: circle;
+      margin-left: var(--space-8);
+    }
+
+    ol {
+      list-style-type: lower-latin;
+      margin-left: var(--space-8);
     }
   }
 

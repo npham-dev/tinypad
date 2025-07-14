@@ -4,7 +4,7 @@ import { relations } from "drizzle-orm";
 
 export const pads = t.pgTable("pads", {
   id: t.uuid().notNull().defaultRandom().primaryKey(),
-  publishedId: t.uuid().notNull().defaultRandom(),
+  publishedSlug: t.uuid().notNull().defaultRandom(),
 
   name: t.varchar({ length: 256 }).notNull(),
   body: t.varchar().notNull(),
