@@ -1,40 +1,80 @@
 import {
   Button,
-  Interactive,
   RiArticleIcon,
   RiBookletIcon,
-  RiLock2FillIcon,
-  RiLockIcon,
   RiUserAddIcon,
   Text,
   View,
 } from "natmfat";
 import { tokens } from "natmfat/lib/tokens";
+import { ClientOnly } from "remix-utils/client-only";
 import type { Route } from "./+types";
 import { Clui } from "./components/clui";
 import { Editor } from "./components/editor";
+import { RenamePopover } from "./components/rename-popover";
+
+import { parseWithZod } from "@conform-to/zod";
 import { db } from "database";
 import { pads } from "database/schema";
 import { eq } from "drizzle-orm";
+import { notFound, serverError, standardResponse } from "~/lib/response";
 import { tryCatch } from "~/lib/try-catch";
-
-// @todo password stuff
+import { renameSchema } from "./action-schema";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const result = await tryCatch(
     db
-      .select({ name: pads.name, body: pads.body })
+      .select({
+        name: pads.name,
+        body: pads.body,
+        password: pads.password,
+        public: pads.public,
+      })
       .from(pads)
       .where(eq(pads.id, params.id)),
   );
   if (result.error !== null || result.data.length === 0) {
-    throw new Response(null, {
-      status: 404,
-      statusText: "Not found",
-    });
+    throw notFound();
   }
   return result.data[0];
 }
+
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData();
+  switch (formData.get("intent")) {
+    case "rename": {
+      const submission = parseWithZod(formData, { schema: renameSchema });
+      if (submission.status !== "success") {
+        return submission.reply();
+      }
+
+      const result = await tryCatch(
+        db
+          .update(pads)
+          .set({
+            name: submission.value.title,
+            description: submission.value.description || "",
+            password: submission.value.password || "",
+            public: submission.value.privacy === "public",
+          })
+          .where(eq(pads.id, submission.value.id)),
+      );
+
+      if (result.error !== null) {
+        throw serverError();
+      }
+
+      return standardResponse({
+        success: true,
+        message: "Updated pad",
+      });
+    }
+  }
+
+  throw notFound();
+}
+
+// @todo password stuff
 
 export default function Page({ loaderData }: Route.ComponentProps) {
   return (
@@ -46,15 +86,10 @@ export default function Page({ loaderData }: Route.ComponentProps) {
               <RiBookletIcon color={tokens.primaryDefault} />
               <View className="flex-row items-center">
                 <Text>tinypad</Text>
-                <Text color="dimmest" className="pl-3 pr-1.5">
+                <Text color="dimmest" className="pr-1.5 pl-3">
                   /
                 </Text>
-                <Interactive variant="noFill">
-                  <View className="flex-row items-center gap-1 px-1.5">
-                    <Text className="font-medium">{loaderData.name}</Text>
-                    <RiLockIcon size={tokens.space12} />
-                  </View>
-                </Interactive>
+                <RenamePopover {...loaderData} />
               </View>
             </View>
           </View>
@@ -73,15 +108,15 @@ export default function Page({ loaderData }: Route.ComponentProps) {
         </header>
       </View>
 
-      <View className="h-full flex-1 flex-row gap-2 px-2 pb-2 overflow-hidden">
+      <View className="h-full flex-1 flex-row gap-2 overflow-hidden px-2 pb-2">
         <View
-          className="rounded-default h-full w-full flex-1 px-4 py-3 overflow-y-auto"
+          className="rounded-default h-full w-full flex-1 overflow-y-auto px-4 py-3"
           style={{
             background:
               "color-mix(in srgb, var(--interactive-background) 60%, var(--surface-background))",
           }}
         >
-          <Editor content={loaderData.body} />
+          <ClientOnly>{() => <Editor content={loaderData.body} />}</ClientOnly>
         </View>
       </View>
     </View>

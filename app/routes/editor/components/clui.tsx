@@ -71,7 +71,7 @@ export function Clui() {
       e.preventDefault();
       setOpen(true);
     },
-    [open],
+    [],
   );
 
   return (

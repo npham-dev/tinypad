@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@conform-to/react':
+        specifier: ^1.8.1
+        version: 1.8.1(react@19.1.0)
+      '@conform-to/zod':
+        specifier: ^1.8.1
+        version: 1.8.1(zod@3.25.76)
       '@react-router/node':
         specifier: ^7.5.3
         version: 7.6.3(react-router@7.6.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(typescript@5.8.3)
@@ -62,9 +68,15 @@ importers:
       react-router:
         specifier: ^7.5.3
         version: 7.6.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      remix-utils:
+        specifier: ^8.7.0
+        version: 8.7.0(react-router@7.6.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)(zod@3.25.76)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
+      zod:
+        specifier: ^3.25.56
+        version: 3.25.76
     devDependencies:
       '@react-router/dev':
         specifier: ^7.5.3
@@ -255,6 +267,19 @@ packages:
   '@babel/types@7.28.1':
     resolution: {integrity: sha512-x0LvFTekgSX+83TI28Y9wYPUfzrnl2aT5+5QLnO6v7mSJYtEEevuDRN0F0uSHRk1G1IWZC43o00Y0xDDrpBGPQ==}
     engines: {node: '>=6.9.0'}
+
+  '@conform-to/dom@1.8.1':
+    resolution: {integrity: sha512-Sg4Jz31ZyiqbFHAKOmG+sVHtukku2Xmxv9ObYzj/TrKMXF1R9qN3ShucAIZWtRaw9l9vZGiqpDnSyfevmiBxuQ==}
+
+  '@conform-to/react@1.8.1':
+    resolution: {integrity: sha512-+bm+j0MOeOxrhrjWeoLmpmt+m1djZmPM/qE+AH5+8RewuC6GyXEXPyWAyES9bw9mZJ/WqInVS6Ljrf4gQ0I0zA==}
+    peerDependencies:
+      react: '>=18'
+
+  '@conform-to/zod@1.8.1':
+    resolution: {integrity: sha512-OO3CvfA1STL68oTKTMEcXWR/pBwWfJDSRVvBiR34gLlkZBV01Kfvmea2kQarFXLCJSANvjUyG52OZe9GxvPUGw==}
+    peerDependencies:
+      zod: ^3.21.0
 
   '@csstools/selector-resolve-nested@3.1.0':
     resolution: {integrity: sha512-mf1LEW0tJLKfWyvn5KdDrhpxHyuxpbNwTIwOYLIvsTffeyOf85j5oIzfG0yosxDgx/sswlqBnESYUcQH0vgZ0g==}
@@ -2819,6 +2844,42 @@ packages:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
     engines: {node: '>= 14.18.0'}
 
+  remix-utils@8.7.0:
+    resolution: {integrity: sha512-oRumofsYFaxHyPtqLuYe3g2nQi4SMYjCoebaeed0gYHIOKBiPPYdNP6cgmQbFjQQ5pwXV+uQiKLqO6pM9ep3VA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@edgefirst-dev/batcher': ^1.0.0
+      '@edgefirst-dev/jwt': ^1.2.0
+      '@edgefirst-dev/server-timing': ^0.0.1
+      '@oslojs/crypto': ^1.0.1
+      '@oslojs/encoding': ^1.1.0
+      intl-parse-accept-language: ^1.0.0
+      is-ip: ^5.0.1
+      react: ^18.0.0 || ^19.0.0
+      react-router: ^7.0.0
+      zod: ^3.22.4
+    peerDependenciesMeta:
+      '@edgefirst-dev/batcher':
+        optional: true
+      '@edgefirst-dev/jwt':
+        optional: true
+      '@edgefirst-dev/server-timing':
+        optional: true
+      '@oslojs/crypto':
+        optional: true
+      '@oslojs/encoding':
+        optional: true
+      intl-parse-accept-language:
+        optional: true
+      is-ip:
+        optional: true
+      react:
+        optional: true
+      react-router:
+        optional: true
+      zod:
+        optional: true
+
   resolve-pkg-maps@1.0.0:
     resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
 
@@ -2993,6 +3054,10 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
+  type-fest@4.41.0:
+    resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
+    engines: {node: '>=16'}
+
   type-is@1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
     engines: {node: '>= 0.6'}
@@ -3157,6 +3222,9 @@ packages:
   yallist@5.0.0:
     resolution: {integrity: sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw==}
     engines: {node: '>=18'}
+
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
 snapshots:
 
@@ -3355,6 +3423,18 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
+
+  '@conform-to/dom@1.8.1': {}
+
+  '@conform-to/react@1.8.1(react@19.1.0)':
+    dependencies:
+      '@conform-to/dom': 1.8.1
+      react: 19.1.0
+
+  '@conform-to/zod@1.8.1(zod@3.25.76)':
+    dependencies:
+      '@conform-to/dom': 1.8.1
+      zod: 3.25.76
 
   '@csstools/selector-resolve-nested@3.1.0(postcss-selector-parser@7.1.0)':
     dependencies:
@@ -5770,6 +5850,14 @@ snapshots:
 
   readdirp@4.1.2: {}
 
+  remix-utils@8.7.0(react-router@7.6.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)(zod@3.25.76):
+    dependencies:
+      type-fest: 4.41.0
+    optionalDependencies:
+      react: 19.1.0
+      react-router: 7.6.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      zod: 3.25.76
+
   resolve-pkg-maps@1.0.0: {}
 
   retry@0.12.0: {}
@@ -5970,6 +6058,8 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
+  type-fest@4.41.0: {}
+
   type-is@1.6.18:
     dependencies:
       media-typer: 0.3.0
@@ -6101,3 +6191,5 @@ snapshots:
   yallist@3.1.1: {}
 
   yallist@5.0.0: {}
+
+  zod@3.25.76: {}

@@ -1,14 +1,16 @@
+import { relations } from "drizzle-orm";
 import * as t from "drizzle-orm/pg-core";
 import { timestamp } from "./utils";
-import { relations } from "drizzle-orm";
 
 export const pads = t.pgTable("pads", {
   id: t.uuid().notNull().defaultRandom().primaryKey(),
   publishedSlug: t.uuid().notNull().defaultRandom(),
 
   name: t.varchar({ length: 256 }).notNull(),
-  body: t.varchar().notNull(),
-  password: t.varchar(),
+  description: t.varchar({ length: 1000 }).notNull().default(""),
+  body: t.varchar().notNull().default("Welcome to tinypad!"),
+  password: t.varchar({ length: 80 }),
+  public: t.boolean().default(true).notNull(),
 
   ...timestamp,
 });

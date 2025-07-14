@@ -1,10 +1,10 @@
-import { redirect, type LoaderFunction } from "react-router";
-import type { Route } from "./+types/home";
-import { v4 as uuidv4 } from "uuid";
 import { db } from "database";
 import { pads } from "database/schema";
+import { redirect } from "react-router";
 import { randomName } from "~/lib/random-name";
+import { serverError } from "~/lib/response";
 import { tryCatch } from "~/lib/try-catch";
+import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -18,19 +18,10 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader() {
   const result = await tryCatch(
-    db
-      .insert(pads)
-      .values({
-        name: randomName(),
-        body: "",
-      })
-      .returning({ id: pads.id }),
+    db.insert(pads).values({ name: randomName() }).returning({ id: pads.id }),
   );
   if (result.error !== null) {
-    throw new Response("Failed to create pad", {
-      status: 500,
-      statusText: "Failed to create pad",
-    });
+    throw serverError();
   }
   return redirect(`/${result.data[0].id}`);
 }
