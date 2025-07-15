@@ -21,6 +21,7 @@
     "@react-router/serve": "^7.5.3",
     "@tiptap/core": "^3.0.1",
     "@tiptap/extension-collaboration": "^3.0.1",
+    "@tiptap/extension-collaboration-caret": "^3.0.3",
     "@tiptap/extension-link": "^3.0.1",
     "@tiptap/extension-text-style": "^3.0.1",
     "@tiptap/pm": "^3.0.1",

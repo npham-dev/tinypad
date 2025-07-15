@@ -16,7 +16,7 @@ export function useDirty(args: { resetKey: unknown }) {
     listeners: {
       onChange: handleInput,
       onInput: handleInput,
-      onKeyDown: handleInput,
+      onClick: handleInput,
     },
   };
 }

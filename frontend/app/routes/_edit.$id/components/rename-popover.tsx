@@ -57,7 +57,7 @@ export function RenamePopover(props: RenamePopoverProps) {
       <PopoverTrigger>
         <Interactive variant="noFill">
           <View className="flex-row items-center gap-1 px-1.5">
-            <Text className="font-medium">{props.name}</Text>
+            <Text>{props.name}</Text>
             {props.public ? null : <RiLockIcon size={tokens.space12} />}
           </View>
         </Interactive>

@@ -7,16 +7,37 @@ const jwtSchema = z.object({
   pads: z.array(z.string()),
 });
 
+function jwtVerify(token: string) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, process.env.JWT_SECRET!, (err, decoded) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      resolve(decoded);
+    });
+  });
+}
+
 export async function getPads(request: IncomingMessage): Promise<string[]> {
-  // must have an authorization header that starts with bearer
-  if (!request.headers.authorization?.startsWith("Bearer")) {
+  if (!request.url) {
     return [];
   }
 
-  // extract token by removing "Bearer "
-  const token = request.headers.authorization.substring(7);
-  const payload = jwt.verify(token, process.env.JWT_SECRET!);
-  const dataResult = await tryCatch(jwtSchema.parseAsync(payload));
+  const token = new URL(request.url, `http://localhost`).searchParams.get(
+    "token",
+  );
+  if (!token) {
+    return [];
+  }
+
+  const payloadResult = await tryCatch(jwtVerify(token));
+  if (payloadResult.error !== null) {
+    return [];
+  }
+
+  const dataResult = await tryCatch(jwtSchema.parseAsync(payloadResult.data));
   if (dataResult.error !== null) {
     return [];
   }
