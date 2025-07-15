@@ -1,18 +1,13 @@
 import {
   Button,
-  IconButton,
   RiArticleIcon,
   RiBookIcon,
-  RiNotificationIcon,
   RiUserAddIcon,
-  Surface,
-  Text,
   View,
 } from "natmfat";
 import { ClientOnly } from "remix-utils/client-only";
 import type { Route } from "./+types";
 import { Clui } from "./components/clui";
-import { Editor } from "./components/editor";
 import { RenamePopover } from "./components/rename-popover";
 
 import { parseWithZod } from "@conform-to/zod";
@@ -27,10 +22,11 @@ import {
   notFound,
   standardResponse,
 } from "~/lib/response";
-import { stringToColor } from "~/lib/string-to-color";
 import { tryCatch } from "~/lib/try-catch";
 import { createAccessControl } from "~/services/access-control.server";
 import { renameSchema } from "./action-schema";
+import { EditorProvider } from "./components/editor/provider";
+import { StatusBar } from "./components/status-bar";
 import { UserContextProvider } from "./hooks/use-user";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
@@ -144,42 +140,13 @@ export default function Page({ loaderData }: Route.ComponentProps) {
           </header>
         </View>
 
-        <View className="relative h-full flex-1 flex-row gap-2 overflow-hidden px-2">
-          <View
-            className="rounded-t-default relative h-full w-full flex-1 overflow-y-auto pt-8"
-            style={{
-              background:
-                "color-mix(in srgb, var(--interactive-background) 60%, var(--surface-background))",
-            }}
-          >
-            <Surface
-              className="rounded-t-default border-outline-dimmest mx-auto h-fit w-full max-w-3xl flex-1 border-x border-t px-16 pt-16"
-              elevated
-            >
-              <ClientOnly>{() => <Editor />}</ClientOnly>
-              <View className="h-16"></View>
-            </Surface>
-          </View>
-        </View>
-
-        <View className="shrink-0 flex-row items-center justify-between px-2 select-none">
-          <View className="flex-row">
-            <IconButton alt="Notifications" className="rounded-none">
-              <RiNotificationIcon size={tokens.space12} />
-            </IconButton>
-          </View>
-
-          {/* @todo change username */}
-          <View className="flex-row items-center gap-1.5">
-            <div
-              className="h-1 w-1 rounded-full"
-              style={{ background: stringToColor(loaderData.name) }}
-            ></div>
-            <Text size="small" color="dimmer">
-              {loaderData.name}
-            </Text>
-          </View>
-        </View>
+        <ClientOnly>
+          {() => (
+            <EditorProvider>
+              <StatusBar />
+            </EditorProvider>
+          )}
+        </ClientOnly>
       </View>
     </UserContextProvider>
   );

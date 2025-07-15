@@ -1,5 +1,7 @@
 import { createContext, useContext } from "react";
 import { randomName } from "~/lib/random-name";
+import { stringToColor } from "~/lib/string-to-color";
+import { omit } from "~/lib/utils";
 
 // technically unnecessary because useLoaderData exists
 // but it is a nicer abstraction
@@ -15,7 +17,15 @@ const UserContext = createContext<UserContext>({
 });
 
 export function useUser() {
-  return useContext(UserContext);
+  const user = useContext(UserContext);
+  return {
+    ...user,
+    color: stringToColor(user.name),
+  };
+}
+
+export function usePublicUser() {
+  return omit(useUser(), ["token"]);
 }
 
 export const UserContextProvider = ({
