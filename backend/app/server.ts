@@ -1,8 +1,10 @@
 import http from "http";
 import * as map from "lib0/map";
 import { WebSocketServer, type WebSocket } from "ws";
+import { canJoinRoom, getPads } from "./access-control";
 import { tryCatch } from "./lib/try-catch";
 import { MesssageType, parseMessage } from "./message-schema";
+import "dotenv/config"
 
 const wsReadyStateConnecting = 0;
 const wsReadyStateOpen = 1;
@@ -41,7 +43,7 @@ const send = (conn: WebSocket, message: object) => {
 /**
  * Setup a new client
  */
-wss.on("connection", (conn) => {
+wss.on("connection", (conn, request) => {
   const subscribedTopics: Set<string> = new Set();
   let closed = false;
   // Check if connection is still alive
@@ -76,15 +78,19 @@ wss.on("connection", (conn) => {
   conn.on("message", async (rawMessage: unknown) => {
     const messageResult = await tryCatch(parseMessage(rawMessage));
     if (messageResult.error !== null) {
+      // fail silently if raw message is bad
       return;
     }
 
     const message = messageResult.data;
     if (message && message.type && !closed) {
       switch (message.type) {
-        case MesssageType.SUBSCRIBE:
-          (message.topics || []).forEach((topicName: string) => {
-            if (typeof topicName === "string") {
+        case MesssageType.SUBSCRIBE: {
+          // handle auth here
+          const pads = await getPads(request);
+          const messageTopics: string[] = message.topics || [];
+          messageTopics.forEach(async (topicName: string) => {
+            if (typeof topicName === "string" && await canJoinRoom(pads, topicName)) {
               // add conn to topic
               const topic = map.setIfUndefined(
                 topics,
@@ -97,6 +103,7 @@ wss.on("connection", (conn) => {
             }
           });
           break;
+        }
         case MesssageType.UNSUBSCRIBE:
           (message.topics || []).forEach((topicName: string) => {
             const subs = topics.get(topicName);
@@ -122,12 +129,10 @@ wss.on("connection", (conn) => {
 });
 
 server.on("upgrade", (request, socket, head) => {
-  wss.handleUpgrade(request, socket, head, (ws) => {
-    // handle auth
+  wss.handleUpgrade(request, socket, head, async (ws) => {
+    // yjs recommends we handle auth here, but we really need the room id (which is in SUBSCRIBE)
     wss.emit("connection", ws, request);
   });
 });
 
 server.listen(port);
-
-console.log("Signaling server running on localhost:", port);

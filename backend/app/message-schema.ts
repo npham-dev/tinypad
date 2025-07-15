@@ -7,7 +7,7 @@ export enum MesssageType {
   PING = "ping",
 }
 
-export const messageSchema = z.discriminatedUnion("message", [
+export const messageSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal(MesssageType.SUBSCRIBE),
     topics: z.array(z.string()).optional(),
@@ -27,8 +27,8 @@ export const messageSchema = z.discriminatedUnion("message", [
 ]);
 
 export async function parseMessage(message: unknown) {
-  if (typeof message === "string") {
-    message = JSON.parse(String(message));
+  if (typeof message === "string" || message instanceof Buffer) {
+    message = JSON.parse(message.toString());
   }
 
   return messageSchema.parseAsync(message);

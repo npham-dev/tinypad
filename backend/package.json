@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "tinypad-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -15,6 +15,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.10.0",
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.0.13",
     "@types/ws": "^8.18.1",
     "prettier": "^3.6.2",
@@ -22,9 +23,12 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "cookie": "^1.0.2",
+    "dotenv": "^17.2.0",
+    "jsonwebtoken": "^9.0.2",
     "lib0": "^0.2.109",
     "tsx": "^4.20.3",
     "ws": "^8.18.3",
-    "zod": "^4.0.5"
+    "zod": "^3.25.76"
   }
 }

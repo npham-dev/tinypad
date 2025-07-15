@@ -3,11 +3,12 @@ import { TextStyleKit } from "@tiptap/extension-text-style";
 // import Collaboration from "@tiptap/extension-collaboration";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-// import { WebrtcProvider } from "y-webrtc";
-// import * as Y from "yjs";
+import { useRef } from "react";
+import { WebrtcProvider } from "y-webrtc";
+import * as Y from "yjs";
+import { usePadId } from "../../hooks/use-pad-id";
 import { RichTextLink } from "./rich-text-link";
 
-// const ydoc = new Y.Doc();
 // const provider = new WebrtcProvider("example-document", ydoc, {
 //   password: "test",
 // });
@@ -15,6 +16,14 @@ import { RichTextLink } from "./rich-text-link";
 type EditorProps = {};
 
 export const Editor = ({}: EditorProps) => {
+  const ydoc = useRef(new Y.Doc());
+  const padId = usePadId();
+  const provider = useRef(
+    new WebrtcProvider(padId, ydoc.current, {
+      signaling: [import.meta.env.VITE_SIGNALING_SERVER!],
+    }),
+  );
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [

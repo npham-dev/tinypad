@@ -15,13 +15,14 @@ import {
 } from "natmfat";
 import { tokens } from "natmfat/lib/tokens";
 import { useRef, useState } from "react";
-import { Form, useParams } from "react-router";
+import { Form } from "react-router";
 import {
   LabeledInput,
   LabeledMultilineInput,
 } from "~/components/labeled-input";
 import { renameSchema } from "../action-schema";
 import { useDirty } from "../hooks/use-dirty";
+import { usePadId } from "../hooks/use-pad-id";
 
 type RenamePopoverProps = {
   name: string;
@@ -31,7 +32,7 @@ type RenamePopoverProps = {
 };
 
 export function RenamePopover(props: RenamePopoverProps) {
-  const params = useParams();
+  const id = usePadId();
 
   const formRef = useRef<HTMLFormElement>(null);
   const [open, setOpen] = useState(false);
@@ -70,7 +71,7 @@ export function RenamePopover(props: RenamePopoverProps) {
           className="flex w-80 flex-col gap-3"
         >
           <input type="hidden" name="intent" value="rename" />
-          <input type="hidden" name="id" value={params.id} />
+          <input type="hidden" name="id" value={id} />
           <LabeledInput
             label="Name"
             placeholder="Name your pad"

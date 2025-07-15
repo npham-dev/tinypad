@@ -48,12 +48,15 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const pad = result.data[0];
   const userCookie = await getUserCookie(request);
 
+  // properly authorized
   if (
     pad.public ||
     (userCookie &&
       userCookie.token &&
       (await canManagePad(userCookie.token, params.id)))
   ) {
+    // create document & rebuild from snapshot
+
     return {
       name: userCookie?.name,
       token: userCookie?.token,
@@ -64,6 +67,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     };
   }
 
+  // @todo redirect to different page requesting password
   throw notAuthorized();
 }
 
