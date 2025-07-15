@@ -7,6 +7,8 @@ const schema = z.object({
   token: z.string().optional(),
 });
 
+export type UserCookie = z.infer<typeof schema>;
+
 export const userCookie = createCookie("tinypad.user", {
   httpOnly: true,
   secure: true,

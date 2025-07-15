@@ -1,8 +1,10 @@
 import { db } from "database";
 import { pads } from "database/schema";
 import { eq } from "drizzle-orm";
-import { notFound } from "~/lib/response";
+import z from "zod";
+import { internalServerError, notAuthorized, notFound } from "~/lib/response";
 import { tryCatch } from "~/lib/try-catch";
+import { getUserCookie } from "~/services/cookies.server";
 import type { Route } from "./+types/api.pad.$id";
 
 // get public facing info about any pad
@@ -26,4 +28,24 @@ export async function loader({ params }: Route.ActionArgs) {
   return result.data[0];
 }
 
-export async function action({ request, params }: Route.ActionArgs) {}
+const postSchema = z.object({
+  delta: z.instanceof(Uint8Array),
+});
+
+export async function action({ request, params }: Route.ActionArgs) {
+  if (request.method === "POST") {
+    const bodyResult = await tryCatch(request.json());
+    if (bodyResult.error !== null) {
+      throw internalServerError();
+    }
+
+    const token = (await getUserCookie(request))?.token;
+    if (!token) {
+      throw notAuthorized();
+    }
+
+    return;
+  }
+
+  throw notFound();
+}

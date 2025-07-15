@@ -25,8 +25,7 @@ import {
   standardResponse,
 } from "~/lib/response";
 import { tryCatch } from "~/lib/try-catch";
-import { canManagePad } from "~/services/access-control.server";
-import { getUserCookie } from "~/services/cookies.server";
+import { createAccessControl } from "~/services/access-control.server";
 import { renameSchema } from "./action-schema";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
@@ -46,20 +45,16 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   }
 
   const pad = result.data[0];
-  const userCookie = await getUserCookie(request);
+  const ac = await createAccessControl(request);
+  if (await ac.canManagePad(params.id, pad.public)) {
+    // @todo if pad is public, add jwt for it
+    // this IS necessary because a user changing a pad to private will kick everyone else
+    // unless they have a jwt (unless we should allow that??)
 
-  // properly authorized
-  if (
-    pad.public ||
-    (userCookie &&
-      userCookie.token &&
-      (await canManagePad(userCookie.token, params.id)))
-  ) {
-    // create document & rebuild from snapshot
-
+    // @todo create document & rebuild from snapshot
     return {
-      name: userCookie?.name,
-      token: userCookie?.token,
+      name: ac.getName(),
+      token: ac.getToken(),
       pad: {
         ...pad,
         password: !!pad.password,
@@ -90,6 +85,7 @@ export async function action({ request }: Route.ActionArgs) {
         throw internalServerError();
       }
 
+      // @todo check auth
       const updateResult = await tryCatch(
         db
           .update(pads)
