@@ -8,7 +8,6 @@ import {
   CommandList,
   DialogTitle,
   Interactive,
-  RiArrowRightIcon,
   RiCommandIcon,
   RiGithubIcon,
   RiTwitterXIcon,

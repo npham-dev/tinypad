@@ -1,4 +1,3 @@
-import { parse } from "cookie";
 import { type IncomingMessage } from "http";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
@@ -9,14 +8,14 @@ const jwtSchema = z.object({
 });
 
 export async function getPads(request: IncomingMessage): Promise<string[]> {
-  const parsedCookies = request.headers.cookie
-    ? parse(request.headers.cookie)
-    : {};
-  if (!parsedCookies.token) {
+  // must have an authorization header that starts with bearer
+  if (!request.headers.authorization?.startsWith("Bearer")) {
     return [];
   }
 
-  const payload = jwt.verify(parsedCookies.token, process.env.JWT_SECRET!);
+  // extract token by removing "Bearer "
+  const token = request.headers.authorization.substring(7);
+  const payload = jwt.verify(token, process.env.JWT_SECRET!);
   const dataResult = await tryCatch(jwtSchema.parseAsync(payload));
   if (dataResult.error !== null) {
     return [];
@@ -29,16 +28,17 @@ export async function canJoinRoom(
   id: string,
 ): Promise<boolean> {
   // if pad is public, anyone can join
-  const responseResult = await tryCatch(fetch(
-    new URL(`/api/pad/${id}`, process.env.FRONTEND_BASE_URL),
-  ));
-  if(responseResult.error !== null || responseResult.data.status !== 200) {
-    return false
+  // if we get anything other than 200 then assume we can't join the room
+  const responseResult = await tryCatch(
+    fetch(new URL(`/api/pad/${id}`, process.env.FRONTEND_BASE_URL)),
+  );
+  if (responseResult.error !== null || responseResult.data.status !== 200) {
+    return false;
   }
-  
+
   const jsonResult = await tryCatch(responseResult.data.json());
-  if(jsonResult.error !== null)  {
-    return false
+  if (jsonResult.error !== null) {
+    return false;
   } else if ("public" in jsonResult.data && jsonResult.data["public"]) {
     return true;
   }

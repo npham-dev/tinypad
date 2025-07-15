@@ -1,10 +1,10 @@
+import "dotenv/config";
 import http from "http";
 import * as map from "lib0/map";
 import { WebSocketServer, type WebSocket } from "ws";
 import { canJoinRoom, getPads } from "./access-control";
 import { tryCatch } from "./lib/try-catch";
 import { MesssageType, parseMessage } from "./message-schema";
-import "dotenv/config"
 
 const wsReadyStateConnecting = 0;
 const wsReadyStateOpen = 1;
@@ -90,7 +90,10 @@ wss.on("connection", (conn, request) => {
           const pads = await getPads(request);
           const messageTopics: string[] = message.topics || [];
           messageTopics.forEach(async (topicName: string) => {
-            if (typeof topicName === "string" && await canJoinRoom(pads, topicName)) {
+            if (
+              typeof topicName === "string" &&
+              (await canJoinRoom(pads, topicName))
+            ) {
               // add conn to topic
               const topic = map.setIfUndefined(
                 topics,
