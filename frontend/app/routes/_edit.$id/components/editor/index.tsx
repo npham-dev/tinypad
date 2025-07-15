@@ -1,72 +1,12 @@
-import Collaboration from "@tiptap/extension-collaboration";
-import CollaborationCaret from "@tiptap/extension-collaboration-caret";
-import { TextStyleKit } from "@tiptap/extension-text-style";
-import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import { WebrtcProvider } from "y-webrtc";
-import * as Y from "yjs";
-import { stringToColor } from "~/lib/string-to-color";
-import { usePadId } from "../../hooks/use-pad-id";
+import { EditorContent, useCurrentEditor } from "@tiptap/react";
+import { useEffect, useRef } from "react";
 import { useUser } from "../../hooks/use-user";
-import { RichTextLink } from "./rich-text-link";
 
 type EditorProps = {};
 
 export const Editor = ({}: EditorProps) => {
   const user = useUser();
-  const padId = usePadId();
-  const ydoc = useMemo(() => new Y.Doc(), [padId]);
-  const provider = useMemo(
-    () =>
-      new WebrtcProvider(padId, ydoc, {
-        // is this secure? probably not lmao
-        signaling: [
-          `${import.meta.env.VITE_SIGNALING_SERVER}?token=${user.token}`,
-        ],
-        password: "encrypt this I guess",
-      }),
-    [padId, user.token, ydoc],
-  );
-
-  const dispose = useCallback(() => {
-    provider.destroy();
-    ydoc.destroy();
-  }, [provider, ydoc]);
-
-  useEffect(() => {
-    return () => dispose();
-  }, [provider, ydoc]);
-
-  useEffect(() => {
-    window.addEventListener("beforeunload", dispose);
-    return () => {
-      window.removeEventListener("beforeunload", dispose);
-    };
-  }, []);
-
-  const editor = useEditor({
-    immediatelyRender: false,
-    extensions: [
-      RichTextLink,
-      TextStyleKit,
-      StarterKit.configure({
-        // https://tiptap.dev/docs/collaboration/getting-started/install
-        undoRedo: false,
-        link: false,
-      }),
-      Collaboration.configure({
-        document: ydoc,
-      }),
-      CollaborationCaret.configure({
-        provider,
-        user: {
-          name: user.name,
-          color: stringToColor(user.name),
-        },
-      }),
-    ],
-  });
+  const { editor } = useCurrentEditor();
 
   // set cursor to idle after a 30s without typing
   const idleTimeout = useRef(0);
@@ -96,5 +36,5 @@ export const Editor = ({}: EditorProps) => {
     };
   }, []);
 
-  return <EditorContent editor={editor} className="h-full" />;
+  return <EditorContent editor={null} className="h-full" />;
 };

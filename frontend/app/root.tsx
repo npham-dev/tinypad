@@ -10,6 +10,7 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 
+import { Toaster } from "natmfat";
 import { fonts } from "natmfat/integrations/remix";
 
 export const links: Route.LinksFunction = () => [...fonts];
@@ -27,6 +28,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration />
         <Scripts />
+        <Toaster />
       </body>
     </html>
   );

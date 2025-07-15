@@ -144,19 +144,20 @@ export default function Page({ loaderData }: Route.ComponentProps) {
           </header>
         </View>
 
-        <View className="before:from-surface relative h-full flex-1 flex-row gap-2 overflow-hidden px-2 before:absolute before:right-0 before:bottom-0 before:left-0 before:z-10 before:block before:h-2 before:w-full before:bg-gradient-to-t before:to-transparent before:content-['']">
+        <View className="relative h-full flex-1 flex-row gap-2 overflow-hidden px-2">
           <View
-            className="rounded-t-default relative h-full w-full flex-1 overflow-hidden pt-8"
+            className="rounded-t-default relative h-full w-full flex-1 overflow-y-auto pt-8"
             style={{
               background:
                 "color-mix(in srgb, var(--interactive-background) 60%, var(--surface-background))",
             }}
           >
             <Surface
-              className="rounded-t-default border-outline-dimmest mx-auto h-full w-full max-w-3xl flex-1 overflow-y-auto border-x border-t px-16 pt-16"
+              className="rounded-t-default border-outline-dimmest mx-auto h-fit w-full max-w-3xl flex-1 border-x border-t px-16 pt-16"
               elevated
             >
               <ClientOnly>{() => <Editor />}</ClientOnly>
+              <View className="h-16"></View>
             </Surface>
           </View>
         </View>
