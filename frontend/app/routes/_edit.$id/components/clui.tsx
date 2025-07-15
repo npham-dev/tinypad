@@ -6,6 +6,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  DialogDescription,
   DialogTitle,
   Interactive,
   RiCommandIcon,
@@ -93,6 +94,10 @@ export function Clui() {
       <CommandDialog open={open} onOpenChange={setOpen} maxWidth="400px">
         <VisuallyHidden.Root>
           <DialogTitle>Search and run commands.</DialogTitle>
+          <DialogDescription>
+            The command menu allows you to access common tools and navigate
+            around the editor.
+          </DialogDescription>
         </VisuallyHidden.Root>
         <Command ref={ref}>
           <CommandInput autoFocus placeholder="Search & run commands" />

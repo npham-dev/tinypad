@@ -3,7 +3,7 @@ import CollaborationCaret from "@tiptap/extension-collaboration-caret";
 import { TextStyleKit } from "@tiptap/extension-text-style";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { WebrtcProvider } from "y-webrtc";
 import * as Y from "yjs";
 import { stringToColor } from "~/lib/string-to-color";
@@ -16,7 +16,7 @@ type EditorProps = {};
 export const Editor = ({}: EditorProps) => {
   const user = useUser();
   const padId = usePadId();
-  const ydoc = useMemo(() => new Y.Doc(), []);
+  const ydoc = useMemo(() => new Y.Doc(), [padId]);
   const provider = useMemo(
     () =>
       new WebrtcProvider(padId, ydoc, {
@@ -26,20 +26,24 @@ export const Editor = ({}: EditorProps) => {
         ],
         password: "encrypt this I guess",
       }),
-    [padId, user.token],
+    [padId, user.token, ydoc],
   );
 
-  useEffect(() => {
-    const onBeforeUnload = () => {
-      provider.destroy();
-      ydoc.destroy();
-    };
-
-    window.addEventListener("beforeunload", onBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", onBeforeUnload);
-    };
+  const dispose = useCallback(() => {
+    provider.destroy();
+    ydoc.destroy();
   }, [provider, ydoc]);
+
+  useEffect(() => {
+    return () => dispose();
+  }, [provider, ydoc]);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", dispose);
+    return () => {
+      window.removeEventListener("beforeunload", dispose);
+    };
+  }, []);
 
   const editor = useEditor({
     immediatelyRender: false,

@@ -1,7 +1,9 @@
 import {
   Button,
+  IconButton,
   RiArticleIcon,
   RiBookIcon,
+  RiNotificationIcon,
   RiUserAddIcon,
   Surface,
   Text,
@@ -142,30 +144,39 @@ export default function Page({ loaderData }: Route.ComponentProps) {
           </header>
         </View>
 
-        <View className="h-full flex-1 flex-row gap-2 overflow-hidden px-2">
+        <View className="before:from-surface relative h-full flex-1 flex-row gap-2 overflow-hidden px-2 before:absolute before:right-0 before:bottom-0 before:left-0 before:z-10 before:block before:h-2 before:w-full before:bg-gradient-to-t before:to-transparent before:content-['']">
           <View
-            className="rounded-t-default h-full w-full flex-1 overflow-y-auto pt-8"
+            className="rounded-t-default relative h-full w-full flex-1 overflow-hidden pt-8"
             style={{
               background:
                 "color-mix(in srgb, var(--interactive-background) 60%, var(--surface-background))",
             }}
           >
             <Surface
-              className="rounded-t-default border-outline-dimmest mx-auto h-full max-h-full w-full max-w-3xl flex-1 border-x border-t px-16 pt-16"
+              className="rounded-t-default border-outline-dimmest mx-auto h-full w-full max-w-3xl flex-1 overflow-y-auto border-x border-t px-16 pt-16"
               elevated
             >
               <ClientOnly>{() => <Editor />}</ClientOnly>
             </Surface>
+          </View>
+        </View>
 
-            <View className="absolute bottom-0 left-0 flex-row items-center gap-1.5 p-2">
-              <div
-                className="h-1 w-1 rounded-full"
-                style={{ background: stringToColor(loaderData.name) }}
-              ></div>
-              <Text size="small" color="dimmer">
-                {loaderData.name}
-              </Text>
-            </View>
+        <View className="shrink-0 flex-row items-center justify-between px-2 select-none">
+          <View className="flex-row">
+            <IconButton alt="Notifications" className="rounded-none">
+              <RiNotificationIcon size={tokens.space12} />
+            </IconButton>
+          </View>
+
+          {/* @todo change username */}
+          <View className="flex-row items-center gap-1.5">
+            <div
+              className="h-1 w-1 rounded-full"
+              style={{ background: stringToColor(loaderData.name) }}
+            ></div>
+            <Text size="small" color="dimmer">
+              {loaderData.name}
+            </Text>
           </View>
         </View>
       </View>
