@@ -183,13 +183,12 @@ https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-bei
       top: -1.4em;
       user-select: none;
       white-space: nowrap;
-      opacity: 0;
       transition: opacity var(--transition-duration-snappy)
         var(--transition-timing-function-snappy);
 
-      &.show {
+      /* &.show {
         opacity: 1;
-      }
+      } */
     }
   }
 }

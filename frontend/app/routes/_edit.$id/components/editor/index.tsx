@@ -62,7 +62,6 @@ export const Editor = ({}: EditorProps) => {
         },
       }),
     ],
-    content: "",
   });
 
   // set cursor to idle after a 30s without typing
