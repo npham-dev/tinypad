@@ -11,6 +11,11 @@ export type UserContext = {
   token: string | null;
 };
 
+export type PublicUser = {
+  name: string;
+  color: string;
+};
+
 const UserContext = createContext<UserContext>({
   name: randomName(),
   token: null,
@@ -24,7 +29,7 @@ export function useUser() {
   };
 }
 
-export function usePublicUser() {
+export function usePublicUser(): PublicUser {
   return omit(useUser(), ["token"]);
 }
 

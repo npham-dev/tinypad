@@ -24,7 +24,7 @@ https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-bei
   --border-radius-12: 0px;
   --border-radius-16: 0px;
   --border-radius-default: var(--border-radius-8);
-  --border-radius-round: 1028px;
+  --border-radius-round: 0px;
 }
 
 .tiptap {
@@ -183,7 +183,8 @@ https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-bei
 
     /* Render the username above the caret */
     .collaboration-carets__label {
-      border-radius: 3px 3px 3px 0;
+      border-radius: var(--border-radius-2) var(--border-radius-2)
+        var(--border-radius-2) 0;
       color: #0d0d0d;
       font-size: 12px;
       font-style: normal;

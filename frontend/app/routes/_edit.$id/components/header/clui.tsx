@@ -91,7 +91,7 @@ export function Clui() {
         </View>
       </Interactive>
 
-      <CommandDialog open={open} onOpenChange={setOpen} maxWidth="400px">
+      <CommandDialog open={open} onOpenChange={setOpen}>
         <VisuallyHidden.Root>
           <DialogTitle>Search and run commands.</DialogTitle>
           <DialogDescription>
@@ -99,7 +99,7 @@ export function Clui() {
             around the editor.
           </DialogDescription>
         </VisuallyHidden.Root>
-        <Command ref={ref}>
+        <Command ref={ref} className="[&_[ui-command-list='']]:pb-0">
           <CommandInput autoFocus placeholder="Search & run commands" />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
