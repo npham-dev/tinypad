@@ -12,6 +12,7 @@ import { omit } from "~/lib/utils";
 import { usePadId } from "../../hooks/use-pad-id";
 import { publicUser, useUser, type PublicUser } from "../../hooks/use-user";
 import { editorStore, Status } from "../../stores/editor-store";
+import { notificationStore, notify } from "../../stores/notification-store";
 import { RichTextLink } from "./rich-text-link";
 
 // provider.on("synced", (isSynced) => {
@@ -97,7 +98,13 @@ export const Editor = () => {
             frequency[publicUser.name] === 1 &&
             publicUser.name !== user.name
           ) {
+            // new user, notify!
+            if (!notificationStore.joinHistory.has(publicUser.name)) {
+              notify(`${publicUser.name} joined`);
+            }
+
             awareness.push(publicUser);
+            notificationStore.joinHistory.add(publicUser.name);
           }
         }
 

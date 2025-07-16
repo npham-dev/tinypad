@@ -12,6 +12,7 @@ import "./app.css";
 
 import { Toaster } from "natmfat";
 import { fonts } from "natmfat/integrations/remix";
+import { tokens } from "natmfat/lib/tokens";
 
 export const links: Route.LinksFunction = () => [...fonts];
 
@@ -26,9 +27,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body data-theme="dark">
         {children}
+        <Toaster offset={{ right: tokens.space12, bottom: tokens.space12 }} />
         <ScrollRestoration />
         <Scripts />
-        <Toaster />
       </body>
     </html>
   );

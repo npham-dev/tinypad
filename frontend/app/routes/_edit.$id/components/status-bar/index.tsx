@@ -1,15 +1,10 @@
-import {
-  RiCloudIcon,
-  RiCloudOffIcon,
-  RiNotificationIcon,
-  Text,
-  View,
-} from "natmfat";
+import { RiCloudIcon, RiCloudOffIcon, Text, View } from "natmfat";
 
 import { useSnapshot } from "valtio";
 import { useUser } from "../../hooks/use-user";
 import { editorStore, Status } from "../../stores/editor-store";
-import { StatusAction, StatusIcon } from "./status";
+import { Notifications } from "./notifications";
+import { StatusAction } from "./status";
 
 export const StatusBar = () => {
   const snap = useSnapshot(editorStore);
@@ -40,9 +35,7 @@ export const StatusBar = () => {
             </>
           )}
         </StatusAction>
-        <StatusIcon alt="Notifications">
-          <RiNotificationIcon />
-        </StatusIcon>
+        <Notifications />
       </View>
     </View>
   );
