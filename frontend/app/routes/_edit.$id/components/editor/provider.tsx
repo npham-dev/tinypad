@@ -1,24 +1,18 @@
-import { Editor } from "@tiptap/core";
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCaret from "@tiptap/extension-collaboration-caret";
 import { TextStyleKit } from "@tiptap/extension-text-style";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 
+import { HocuspocusProvider } from "@hocuspocus/provider";
 import { Surface, View } from "natmfat";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
-import { WebrtcProvider } from "y-webrtc";
+import { useEffect, useState, type ReactNode } from "react";
+import { ref } from "valtio";
 import * as Y from "yjs";
 import { omit } from "~/lib/utils";
 import { usePadId } from "../../hooks/use-pad-id";
 import { useUser } from "../../hooks/use-user";
-import { ReconnectDialog } from "./reconnect-dialog";
+import { editorStore, Status } from "../../stores/editor-store";
 import { RichTextLink } from "./rich-text-link";
 
 // provider.on("synced", (isSynced) => {
@@ -31,44 +25,31 @@ import { RichTextLink } from "./rich-text-link";
 //   );
 // });
 
-enum Status {
-  CONNECTED = "connected",
-  CONNECTING = "connecting",
-  DISCONNECTED = "disconnected",
-}
-
-const EditorContext = createContext<{ editor: Editor | null }>({
-  editor: null,
-});
-
-export const useCurrentEditor = () => {
-  const { editor } = useContext(EditorContext);
-  return editor;
-};
-
 export const EditorProvider = (args: { children: ReactNode }) => {
   const user = useUser();
   const padId = usePadId();
-  const [status, setStatus] = useState<Status>(Status.CONNECTING);
   const [ydoc, setYdoc] = useState<Y.Doc | null>(null);
-  const [provider, setProvider] = useState<WebrtcProvider | null>(null);
+  const [provider, setProvider] = useState<HocuspocusProvider | null>(null);
   const editor = useEditor(
     {
       enableContentCheck: true,
       onContentError: ({ disableCollaboration }) => {
-        setStatus(Status.DISCONNECTED);
+        editorStore.status = Status.DISCONNECTED;
         disableCollaboration();
       },
       onCreate: ({ editor: currentEditor }) => {
         if (provider) {
           provider.on("synced", () => {
             if (currentEditor.isEmpty) {
-              currentEditor.commands.setContent("# Welcome to tinypad!");
+              currentEditor.commands.setContent(
+                "<h1>Welcome to tinypad!</h1><p>tinypad is a smol multiplayer text editor with Markdown support.</p>",
+              );
             }
           });
         }
       },
       autofocus: true,
+      // @ts-ignore fix later, ts doesn't like dynamic extensions like we're doing here
       extensions: [
         RichTextLink,
         TextStyleKit,
@@ -90,15 +71,22 @@ export const EditorProvider = (args: { children: ReactNode }) => {
   );
 
   useEffect(() => {
-    const nextYdoc = new Y.Doc();
-    const nextProvider = new WebrtcProvider(padId, nextYdoc, {
-      signaling: [
-        `${import.meta.env.VITE_SIGNALING_SERVER}?token=${user.token}`,
-      ],
-    });
+    editorStore.editor = ref(editor);
+  }, [editor]);
 
-    nextProvider.on("status", (e) => {
-      setStatus(e.connected ? Status.CONNECTED : Status.DISCONNECTED);
+  useEffect(() => {
+    const nextYdoc = new Y.Doc({ guid: padId });
+    const nextProvider = new HocuspocusProvider({
+      url: import.meta.env.VITE_HOCUSPOCUS_PROVIDER!,
+      name: padId,
+      document: nextYdoc,
+      token: user.token,
+      onConnect() {
+        editorStore.status = Status.CONNECTED;
+      },
+      onDisconnect() {
+        editorStore.status = Status.DISCONNECTED;
+      },
     });
 
     setYdoc(nextYdoc);
@@ -111,15 +99,15 @@ export const EditorProvider = (args: { children: ReactNode }) => {
       nextYdoc.destroy();
       setYdoc(null);
 
-      setStatus(Status.CONNECTING);
+      editorStore.status = Status.CONNECTING;
     };
   }, [padId, user.token]);
 
   return (
-    <EditorContext.Provider value={{ editor }}>
-      <View className="relative h-full flex-1 flex-row gap-2 overflow-hidden px-2">
+    <>
+      <View className="relative h-full flex-1 flex-row gap-2 overflow-hidden">
         <View
-          className="rounded-t-default relative h-full w-full flex-1 overflow-y-auto pt-8"
+          className="rounded-t-default relative h-full w-full flex-1 overflow-y-auto pt-16"
           style={{
             background:
               "color-mix(in srgb, var(--interactive-background) 60%, var(--surface-background))",
@@ -135,9 +123,9 @@ export const EditorProvider = (args: { children: ReactNode }) => {
         </View>
       </View>
 
-      <ReconnectDialog open={status === Status.DISCONNECTED} />
+      {/* <ReconnectDialog open={status === Status.DISCONNECTED} /> */}
 
       {args.children}
-    </EditorContext.Provider>
+    </>
   );
 };

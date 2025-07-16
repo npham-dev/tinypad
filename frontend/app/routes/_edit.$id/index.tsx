@@ -1,21 +1,12 @@
-import {
-  Button,
-  RiArticleIcon,
-  RiBookIcon,
-  RiUserAddIcon,
-  View,
-} from "natmfat";
+import { View } from "natmfat";
 import { ClientOnly } from "remix-utils/client-only";
 import type { Route } from "./+types";
-import { Clui } from "./components/clui";
-import { RenamePopover } from "./components/rename-popover";
 
 import { parseWithZod } from "@conform-to/zod";
 import bcrypt from "bcrypt";
 import { db } from "database";
 import { pads } from "database/schema";
 import { eq } from "drizzle-orm";
-import { tokens } from "natmfat/lib/tokens";
 import {
   internalServerError,
   notAuthorized,
@@ -26,6 +17,7 @@ import { tryCatch } from "~/lib/try-catch";
 import { createAccessControl } from "~/services/access-control.server";
 import { renameSchema } from "./action-schema";
 import { EditorProvider } from "./components/editor/provider";
+import { Header } from "./components/header";
 import { StatusBar } from "./components/status-bar";
 import { UserContextProvider } from "./hooks/use-user";
 
@@ -116,32 +108,8 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Page({ loaderData }: Route.ComponentProps) {
   return (
     <UserContextProvider name={loaderData.name} token={loaderData.token}>
-      <View className="h-screen">
-        <View asChild>
-          <header className="shrink-0 flex-row items-center justify-between p-2 select-none">
-            <View className="flex-row items-center gap-2">
-              <View className="flex-row items-center gap-1">
-                <View className="to-primary-dimmest rounded-default h-8 w-8 items-center justify-center bg-gradient-to-tr from-transparent">
-                  <RiBookIcon color={tokens.white} />
-                </View>
-                <RenamePopover {...loaderData.pad} />
-              </View>
-            </View>
-
-            <View className="flex-row gap-2">
-              <Clui />
-              <Button>
-                <RiUserAddIcon />
-                Invite
-              </Button>
-              <Button>
-                <RiArticleIcon />
-                Publish
-              </Button>
-            </View>
-          </header>
-        </View>
-
+      <View className="h-screen px-2">
+        <Header />
         <ClientOnly>
           {() => (
             <EditorProvider>

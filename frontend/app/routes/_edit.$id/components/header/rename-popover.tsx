@@ -15,23 +15,18 @@ import {
 } from "natmfat";
 import { tokens } from "natmfat/lib/tokens";
 import { useRef, useState } from "react";
-import { Form } from "react-router";
+import { Form, useLoaderData } from "react-router";
 import {
   LabeledInput,
   LabeledMultilineInput,
 } from "~/components/labeled-input";
-import { renameSchema } from "../action-schema";
-import { useDirty } from "../hooks/use-dirty";
-import { usePadId } from "../hooks/use-pad-id";
+import type { loader } from "../..";
+import { renameSchema } from "../../action-schema";
+import { useDirty } from "../../hooks/use-dirty";
+import { usePadId } from "../../hooks/use-pad-id";
 
-type RenamePopoverProps = {
-  name: string;
-  description: string;
-  password: boolean;
-  public: boolean;
-};
-
-export function RenamePopover(props: RenamePopoverProps) {
+export function RenamePopover() {
+  const { pad } = useLoaderData<typeof loader>();
   const id = usePadId();
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -57,8 +52,8 @@ export function RenamePopover(props: RenamePopoverProps) {
       <PopoverTrigger>
         <Interactive variant="noFill">
           <View className="flex-row items-center gap-1 px-1.5">
-            <Text>{props.name}</Text>
-            {props.public ? null : <RiLockIcon size={tokens.space12} />}
+            <Text>{pad.name}</Text>
+            {pad.public ? null : <RiLockIcon size={tokens.space12} />}
           </View>
         </Interactive>
       </PopoverTrigger>
@@ -80,7 +75,7 @@ export function RenamePopover(props: RenamePopoverProps) {
             errorId={fields.title.errorId}
             autoComplete="off"
             required
-            defaultValue={props.name}
+            defaultValue={pad.name}
             {...listeners}
           />
           <LabeledMultilineInput
@@ -89,7 +84,7 @@ export function RenamePopover(props: RenamePopoverProps) {
             errors={fields.description.errors}
             errorId={fields.description.errorId}
             maxLength={140}
-            defaultValue={props.description}
+            defaultValue={pad.description}
             className="min-h-18 resize-none"
             {...listeners}
           />
@@ -103,14 +98,14 @@ export function RenamePopover(props: RenamePopoverProps) {
               type="password"
               {...listeners}
             />
-            {props.password ? (
+            {pad.password ? (
               <Text color="dimmer" size="small" multiline>
                 You have a password set, but it cannot be displayed again for
                 security reasons.
               </Text>
             ) : null}
           </View>
-          <PrivacySettings defaultValue={props.public} {...listeners} />
+          <PrivacySettings defaultValue={pad.public} {...listeners} />
         </Form>
       </PopoverContent>
     </Popover>
