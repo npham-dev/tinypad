@@ -14,6 +14,18 @@ https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-bei
 *::-webkit-scrollbar {
   display: none; /* Older Safari and Chromium */
 }
+:root,
+[data-theme="dark"] {
+  --border-radius-1: 0px;
+  --border-radius-2: 0px;
+  --border-radius-4: 0px;
+  --border-radius-6: 0px;
+  --border-radius-8: 0px;
+  --border-radius-12: 0px;
+  --border-radius-16: 0px;
+  --border-radius-default: var(--border-radius-8);
+  --border-radius-round: 1028px;
+}
 
 .tiptap {
   outline: none;

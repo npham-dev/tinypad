@@ -50,8 +50,8 @@ export function RenamePopover() {
       }}
     >
       <PopoverTrigger>
-        <Interactive variant="noFill">
-          <View className="flex-row items-center gap-1 px-1.5">
+        <Interactive variant="fill">
+          <View className="h-8 flex-row items-center gap-1 px-2">
             <Text>{pad.name}</Text>
             {pad.public ? null : <RiLockIcon size={tokens.space12} />}
           </View>

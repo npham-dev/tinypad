@@ -108,7 +108,7 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Page({ loaderData }: Route.ComponentProps) {
   return (
     <UserContextProvider name={loaderData.name} token={loaderData.token}>
-      <View className="h-screen px-2">
+      <View className="border-outline-dimmest h-screen border">
         <Header />
         <ClientOnly>
           {() => (

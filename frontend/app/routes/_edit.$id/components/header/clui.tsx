@@ -76,15 +76,15 @@ export function Clui() {
 
   return (
     <>
-      <Interactive>
+      <Interactive variant="fill">
         <View
-          className="text-foreground-dimmest hover:text-foreground-dimmer h-8 w-64 max-w-full shrink-1 flex-row items-center justify-between gap-2 px-1 select-none"
+          className="text-foreground-dimmest hover:text-foreground-dimmer h-8 w-72 max-w-full shrink-1 flex-row items-center justify-between gap-2 px-1 select-none"
           onClick={() => setOpen(true)}
         >
           <Text className="pl-2">Search & run commands</Text>
           <Surface
             elevated
-            className="text-small border-outline-dimmest flex-row items-center gap-1 rounded-lg border px-0.5"
+            className="text-small border-outline-dimmest flex-row items-center gap-1 rounded-md border px-0.5"
           >
             <RiCommandIcon size={tokens.space12} />K
           </Surface>

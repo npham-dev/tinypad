@@ -87,6 +87,9 @@ export const EditorProvider = (args: { children: ReactNode }) => {
       onDisconnect() {
         editorStore.status = Status.DISCONNECTED;
       },
+      async onAwarenessChange(data) {
+        console.log(data);
+      },
     });
 
     setYdoc(nextYdoc);
@@ -107,14 +110,14 @@ export const EditorProvider = (args: { children: ReactNode }) => {
     <>
       <View className="relative h-full flex-1 flex-row gap-2 overflow-hidden">
         <View
-          className="rounded-t-default relative h-full w-full flex-1 overflow-y-auto pt-16"
+          className="border-outline-dimmest relative h-full w-full flex-1 overflow-y-auto border-y md:pt-16"
           style={{
             background:
               "color-mix(in srgb, var(--interactive-background) 60%, var(--surface-background))",
           }}
         >
           <Surface
-            className="rounded-t-default border-outline-dimmest mx-auto h-fit w-full max-w-3xl flex-1 border-x border-t px-16 pt-16"
+            className="mx-auto h-fit w-full max-w-4xl flex-1 px-16 pt-16"
             elevated
           >
             <EditorContent editor={editor}></EditorContent>

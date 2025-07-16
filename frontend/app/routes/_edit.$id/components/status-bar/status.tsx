@@ -12,9 +12,9 @@ export function StatusAction({
   skip?: boolean;
 } & ComponentPropsWithRef<"button">) {
   return (
-    <Interactive variant="noFill" skip={skip}>
+    <Interactive variant="fill" skip={skip}>
       <View
-        className="h-8 min-w-8 flex-row items-center justify-center gap-2 rounded-none px-2"
+        className="h-8 min-w-8 flex-row items-center justify-center gap-2 px-2"
         asChild
       >
         <button {...props}>
@@ -27,7 +27,7 @@ export function StatusAction({
 
 export function StatusIcon(props: { children: React.ReactNode; alt: string }) {
   return (
-    <IconButton alt={props.alt} className="h-8 w-8 rounded-none">
+    <IconButton alt={props.alt} className="h-8 w-8 rounded-none" variant="fill">
       <IconSizeProvider value={tokens.space16}>
         {props.children}
       </IconSizeProvider>
