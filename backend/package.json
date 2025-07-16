@@ -1,5 +1,5 @@
 {
-  "name": "tinypad-backend",
+  "name": "backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,8 +7,7 @@
     "build": "tsc --outDir build",
     "typecheck": "tsc --noEmit",
     "dev": "tsx watch ./app/server.js",
-    "start": "node ./build/app/server.js",
-    "fmt": "prettier --write ."
+    "start": "node ./build/app/server.js"
   },
   "keywords": [],
   "author": "",
@@ -17,8 +16,6 @@
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.0.14",
-    "prettier": "^3.6.2",
-    "prettier-plugin-organize-imports": "^4.1.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {

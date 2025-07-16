@@ -1,0 +1,32 @@
+{
+  "name": "common",
+  "version": "1.0.0",
+  "description": "",
+  "exports": {
+    "./lib/*": {
+      "types": "./lib/*.ts",
+      "default": "./lib/*.ts"
+    },
+    "./database/*": {
+      "types": "./database/*.ts",
+      "default": "./database/*.ts"
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:push": "pnpm exec drizzle-kit push",
+    "db:migrate": "pnpm exec drizzle-kit migrate",
+    "db:generate": "pnpm exec drizzle-kit generate",
+    "db:studio": "pnpm drizzle-kit studio"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.44.3"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.4"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0"
+}

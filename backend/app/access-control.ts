@@ -14,7 +14,6 @@ function jwtVerify(token: string) {
         reject(err);
         return;
       }
-
       resolve(decoded);
     });
   });

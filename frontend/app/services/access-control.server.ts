@@ -1,10 +1,10 @@
-import { db } from "database";
-import { pads } from "database/schema";
+import { db } from "@tinypad/common/database";
 import { eq } from "drizzle-orm";
 import jwt from "jsonwebtoken";
 import z from "zod";
 import { randomName } from "~/lib/random-name";
 import { tryCatch } from "~/lib/try-catch";
+import { pads } from "../../../common/database/schema";
 import { getUserCookie, type UserCookie } from "./cookies.server";
 
 const jwtSchema = z.object({

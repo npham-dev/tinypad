@@ -4,8 +4,6 @@ import type { Route } from "./+types";
 
 import { parseWithZod } from "@conform-to/zod";
 import bcrypt from "bcrypt";
-import { db } from "database";
-import { pads } from "database/schema";
 import { eq } from "drizzle-orm";
 import {
   internalServerError,
@@ -15,6 +13,8 @@ import {
 } from "~/lib/response";
 import { tryCatch } from "~/lib/try-catch";
 import { createAccessControl } from "~/services/access-control.server";
+import { db } from "../../../../common/database";
+import { pads } from "../../../../common/database/schema";
 import { renameSchema } from "./action-schema";
 import { Editor } from "./components/editor";
 import { Header } from "./components/header";
