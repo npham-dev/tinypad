@@ -6,22 +6,21 @@ import { omit } from "~/lib/utils";
 // technically unnecessary because useLoaderData exists
 // but it is a nicer abstraction
 
-export type UserContext = {
+export type User = {
   name: string;
+  color: string;
   token: string | null;
 };
 
-export type PublicUser = {
-  name: string;
-  color: string;
-};
+export type PublicUser = Pick<User, "name" | "color">;
 
+type UserContext = Pick<User, "name" | "token">;
 const UserContext = createContext<UserContext>({
   name: randomName(),
   token: null,
 });
 
-export function useUser() {
+export function useUser(): User {
   const user = useContext(UserContext);
   return {
     ...user,
@@ -29,8 +28,8 @@ export function useUser() {
   };
 }
 
-export function usePublicUser(): PublicUser {
-  return omit(useUser(), ["token"]);
+export function publicUser(user: User): PublicUser {
+  return omit(user, ["token"]);
 }
 
 export const UserContextProvider = ({

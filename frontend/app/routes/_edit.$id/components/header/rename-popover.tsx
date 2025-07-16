@@ -63,6 +63,7 @@ export function RenamePopover() {
           method="post"
           id={form.id}
           onSubmit={form.onSubmit}
+          reloadDocument={false}
           className="flex w-80 flex-col gap-3"
         >
           <input type="hidden" name="intent" value="rename" />

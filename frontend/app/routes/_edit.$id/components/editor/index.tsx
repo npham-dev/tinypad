@@ -10,7 +10,7 @@ import { ref } from "valtio";
 import * as Y from "yjs";
 import { omit } from "~/lib/utils";
 import { usePadId } from "../../hooks/use-pad-id";
-import { useUser, type PublicUser } from "../../hooks/use-user";
+import { publicUser, useUser, type PublicUser } from "../../hooks/use-user";
 import { editorStore, Status } from "../../stores/editor-store";
 import { RichTextLink } from "./rich-text-link";
 
@@ -87,16 +87,26 @@ export const Editor = () => {
         editorStore.status = Status.DISCONNECTED;
       },
       async onAwarenessChange(data) {
-        // filter out duplicated names
-        const recordedName = new Set<string>();
+        const frequency: Record<string, number> = {};
         const awareness: PublicUser[] = [];
         for (const state of data.states) {
-          const user = state.user as PublicUser;
-          if (!recordedName.has(user.name)) {
-            awareness.push(user);
-            recordedName.add(user.name);
+          const publicUser = state.user as PublicUser;
+          // don't allow duplicate names or ourself
+          frequency[publicUser.name] = (frequency[publicUser.name] || 0) + 1;
+          if (
+            frequency[publicUser.name] === 1 &&
+            publicUser.name !== user.name
+          ) {
+            awareness.push(publicUser);
           }
         }
+
+        // only if we have multiple tabs open do we add ourself back in
+        if (frequency[user.name] > 1) {
+          awareness.push(publicUser(user));
+        }
+
+        // @todo if not self, add notification
         editorStore.awareness = awareness;
       },
     });

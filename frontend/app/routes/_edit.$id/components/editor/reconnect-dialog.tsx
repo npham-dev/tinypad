@@ -7,6 +7,8 @@ import {
   RiRefreshIcon,
 } from "natmfat";
 
+// @todo debounce & use valtio status
+
 export function ReconnectDialog(args: { open: boolean }) {
   return (
     <Dialog open={args.open}>

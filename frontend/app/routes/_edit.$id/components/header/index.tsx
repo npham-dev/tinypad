@@ -1,16 +1,10 @@
-import {
-  Button,
-  RiArticleIcon,
-  RiBookIcon,
-  RiUserAddIcon,
-  Separator,
-  View,
-} from "natmfat";
+import { Button, RiArticleIcon, RiBookIcon, Separator, View } from "natmfat";
 import { Clui } from "./clui";
 import { RenamePopover } from "./rename-popover";
 
 import { tokens } from "natmfat/lib/tokens";
 import { Awareness } from "./awareness";
+import { InvitePopover } from "./invite-popover";
 
 export function Header() {
   return (
@@ -30,10 +24,7 @@ export function Header() {
 
         <View className="flex-row">
           <Awareness />
-          <Button>
-            <RiUserAddIcon />
-            Invite
-          </Button>
+          <InvitePopover />
           <Button>
             <RiArticleIcon />
             Publish
