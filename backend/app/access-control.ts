@@ -1,4 +1,4 @@
-import { type IncomingMessage } from "http";
+import "dotenv/config";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { tryCatch } from "./lib/try-catch";
@@ -20,18 +20,7 @@ function jwtVerify(token: string) {
   });
 }
 
-export async function getPads(request: IncomingMessage): Promise<string[]> {
-  if (!request.url) {
-    return [];
-  }
-
-  const token = new URL(request.url, `http://localhost`).searchParams.get(
-    "token",
-  );
-  if (!token) {
-    return [];
-  }
-
+async function getPads(token: string): Promise<string[]> {
   const payloadResult = await tryCatch(jwtVerify(token));
   if (payloadResult.error !== null) {
     return [];
@@ -44,10 +33,9 @@ export async function getPads(request: IncomingMessage): Promise<string[]> {
   return dataResult.data.pads;
 }
 
-export async function canJoinRoom(
-  pads: string[],
-  id: string,
-): Promise<boolean> {
+export async function canJoinRoom(token: string, id: string): Promise<boolean> {
+  const pads = await getPads(token);
+
   // if pad is public, anyone can join
   // if we get anything other than 200 then assume we can't join the room
   const responseResult = await tryCatch(
