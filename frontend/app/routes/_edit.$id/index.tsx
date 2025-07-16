@@ -121,7 +121,9 @@ export default function Page({ loaderData }: Route.ComponentProps) {
           <header className="shrink-0 flex-row items-center justify-between p-2 select-none">
             <View className="flex-row items-center gap-2">
               <View className="flex-row items-center gap-1">
-                <RiBookIcon color={tokens.primaryDefault} />
+                <View className="to-primary-dimmest rounded-default h-8 w-8 items-center justify-center bg-gradient-to-tr from-transparent">
+                  <RiBookIcon color={tokens.white} />
+                </View>
                 <RenamePopover {...loaderData.pad} />
               </View>
             </View>

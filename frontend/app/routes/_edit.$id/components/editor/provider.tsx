@@ -10,7 +10,6 @@ import {
   createContext,
   useContext,
   useEffect,
-  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -19,6 +18,7 @@ import * as Y from "yjs";
 import { omit } from "~/lib/utils";
 import { usePadId } from "../../hooks/use-pad-id";
 import { useUser } from "../../hooks/use-user";
+import { ReconnectDialog } from "./reconnect-dialog";
 import { RichTextLink } from "./rich-text-link";
 
 // provider.on("synced", (isSynced) => {
@@ -31,11 +31,11 @@ import { RichTextLink } from "./rich-text-link";
 //   );
 // });
 
-// provider.on("synced", () => {
-//   if (currentEditor.isEmpty) {
-//     currentEditor.commands.setContent("hi");
-//   }
-// });
+enum Status {
+  CONNECTED = "connected",
+  CONNECTING = "connecting",
+  DISCONNECTED = "disconnected",
+}
 
 const EditorContext = createContext<{ editor: Editor | null }>({
   editor: null,
@@ -49,22 +49,24 @@ export const useCurrentEditor = () => {
 export const EditorProvider = (args: { children: ReactNode }) => {
   const user = useUser();
   const padId = usePadId();
-  // const [editor, setEditor] = useState<Editor | null>(null);
-  const editorRef = useRef<HTMLDivElement>(null);
-  const [status, setStatus] = useState("connecting");
-
+  const [status, setStatus] = useState<Status>(Status.CONNECTING);
   const [ydoc, setYdoc] = useState<Y.Doc | null>(null);
   const [provider, setProvider] = useState<WebrtcProvider | null>(null);
-
   const editor = useEditor(
     {
       enableContentCheck: true,
       onContentError: ({ disableCollaboration }) => {
-        setStatus("disconnected");
+        setStatus(Status.DISCONNECTED);
         disableCollaboration();
       },
       onCreate: ({ editor: currentEditor }) => {
-        console.log(currentEditor.getText());
+        if (provider) {
+          provider.on("synced", () => {
+            if (currentEditor.isEmpty) {
+              currentEditor.commands.setContent("# Welcome to tinypad!");
+            }
+          });
+        }
       },
       autofocus: true,
       extensions: [
@@ -76,7 +78,8 @@ export const EditorProvider = (args: { children: ReactNode }) => {
           link: false,
         }),
         ydoc && Collaboration.configure({ document: ydoc }),
-        provider &&
+        ydoc &&
+          provider &&
           CollaborationCaret.configure({
             provider,
             user: omit(user, ["token"]),
@@ -95,7 +98,7 @@ export const EditorProvider = (args: { children: ReactNode }) => {
     });
 
     nextProvider.on("status", (e) => {
-      setStatus(e.connected ? "connected" : "disconnected");
+      setStatus(e.connected ? Status.CONNECTED : Status.DISCONNECTED);
     });
 
     setYdoc(nextYdoc);
@@ -108,7 +111,7 @@ export const EditorProvider = (args: { children: ReactNode }) => {
       nextYdoc.destroy();
       setYdoc(null);
 
-      setStatus("disconnected");
+      setStatus(Status.CONNECTING);
     };
   }, [padId, user.token]);
 
@@ -126,12 +129,14 @@ export const EditorProvider = (args: { children: ReactNode }) => {
             className="rounded-t-default border-outline-dimmest mx-auto h-fit w-full max-w-3xl flex-1 border-x border-t px-16 pt-16"
             elevated
           >
-            {status}
             <EditorContent editor={editor}></EditorContent>
             <View className="h-16"></View>
           </Surface>
         </View>
       </View>
+
+      <ReconnectDialog open={status === Status.DISCONNECTED} />
+
       {args.children}
     </EditorContext.Provider>
   );
