@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@tinypad/common/*": ["./common"]
+      "common/*": ["./common"]
     },
     "moduleResolution": "node",
     "esModuleInterop": true,

@@ -5,10 +5,10 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 
 import { HocuspocusProvider } from "@hocuspocus/provider";
+import { omit } from "common/lib/utils";
 import { useEffect, useState } from "react";
 import { ref } from "valtio";
 import * as Y from "yjs";
-import { omit } from "~/lib/utils";
 import { usePadId } from "../../hooks/use-pad-id";
 import { publicUser, useUser, type PublicUser } from "../../hooks/use-user";
 import { editorStore, Status } from "../../stores/editor-store";

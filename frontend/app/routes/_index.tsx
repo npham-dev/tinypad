@@ -1,7 +1,7 @@
+import { tryCatch } from "common/lib/try-catch";
 import { redirect } from "react-router";
 import { randomPadName } from "~/lib/random-name";
 import { internalServerError } from "~/lib/response";
-import { tryCatch } from "~/lib/try-catch";
 import { db } from "../../../common/database";
 import { pads } from "../../../common/database/schema";
 

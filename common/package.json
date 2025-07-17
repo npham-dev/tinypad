@@ -7,9 +7,17 @@
       "types": "./lib/*.ts",
       "default": "./lib/*.ts"
     },
+    "./database": {
+      "types": "./database/index.ts",
+      "default": "./database/index.ts"
+    },
     "./database/*": {
       "types": "./database/*.ts",
       "default": "./database/*.ts"
+    },
+    "./database/schema": {
+      "types": "./database/schema/index.ts",
+      "default": "./database/schema/index.ts"
     }
   },
   "scripts": {
@@ -20,7 +28,8 @@
     "db:studio": "pnpm drizzle-kit studio"
   },
   "dependencies": {
-    "drizzle-orm": "^0.44.3"
+    "drizzle-orm": "^0.44.3",
+    "dotenv": "^17.2.0"
   },
   "devDependencies": {
     "drizzle-kit": "^0.31.4"

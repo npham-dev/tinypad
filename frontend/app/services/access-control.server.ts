@@ -1,9 +1,9 @@
-import { db } from "@tinypad/common/database";
+import { db } from "common/database";
+import { tryCatch } from "common/lib/try-catch";
 import { eq } from "drizzle-orm";
 import jwt from "jsonwebtoken";
 import z from "zod";
 import { randomName } from "~/lib/random-name";
-import { tryCatch } from "~/lib/try-catch";
 import { pads } from "../../../common/database/schema";
 import { getUserCookie, type UserCookie } from "./cookies.server";
 

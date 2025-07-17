@@ -1,8 +1,8 @@
+import { db } from "common/database";
+import { pads } from "common/database/schema";
+import { tryCatch } from "common/lib/try-catch";
 import { eq } from "drizzle-orm";
 import { notFound } from "~/lib/response";
-import { tryCatch } from "~/lib/try-catch";
-import { db } from "../../../common/database";
-import { pads } from "../../../common/database/schema";
 import type { Route } from "./+types/api.pad.$id";
 
 // get public facing info about any pad

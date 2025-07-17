@@ -4,6 +4,7 @@ import type { Route } from "./+types";
 
 import { parseWithZod } from "@conform-to/zod";
 import bcrypt from "bcrypt";
+import { tryCatch } from "common/lib/try-catch";
 import { eq } from "drizzle-orm";
 import {
   internalServerError,
@@ -11,7 +12,6 @@ import {
   notFound,
   standardResponse,
 } from "~/lib/response";
-import { tryCatch } from "~/lib/try-catch";
 import { createAccessControl } from "~/services/access-control.server";
 import { db } from "../../../../common/database";
 import { pads } from "../../../../common/database/schema";

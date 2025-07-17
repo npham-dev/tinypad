@@ -51,6 +51,9 @@ importers:
 
   common:
     dependencies:
+      dotenv:
+        specifier: ^17.2.0
+        version: 17.2.0
       drizzle-orm:
         specifier: ^0.44.3
         version: 0.44.3(@types/pg@8.15.4)(pg@8.16.3)
@@ -107,8 +110,8 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       common:
-        specifier: '*'
-        version: 0.2.5
+        specifier: workspace:*
+        version: link:../common
       dotenv:
         specifier: ^17.2.0
         version: 17.2.0
@@ -188,9 +191,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.6
         version: 19.1.6(@types/react@19.1.8)
-      drizzle-kit:
-        specifier: ^0.31.4
-        version: 0.31.4
       postcss-nesting:
         specifier: ^13.0.2
         version: 13.0.2(postcss@8.5.6)
@@ -2019,9 +2019,6 @@ packages:
 
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
-
-  common@0.2.5:
-    resolution: {integrity: sha512-bjuztiY8Wcz2V9dPpa0XdF0unGWqAGsnyKDGV7g6xDcaZfpufRrxV35qhuhjwv1h0jEPeiCHWKAQFLj702jGnA==}
 
   compressible@2.0.18:
     resolution: {integrity: sha512-AF3r7P5dWxL8MxyITRMlORQNaOA2IkAFaTr4k7BUumjPtRpGDTZpl0Pb1XCO6JeDCBdp126Cgs9sMxqSjgYyRg==}
@@ -5313,8 +5310,6 @@ snapshots:
       color-name: 1.1.4
 
   color-name@1.1.4: {}
-
-  common@0.2.5: {}
 
   compressible@2.0.18:
     dependencies:

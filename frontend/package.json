@@ -9,7 +9,7 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
-    "common": "*",
+    "common": "workspace:*",
     "@conform-to/react": "^1.8.2",
     "@conform-to/zod": "^1.8.2",
     "@hocuspocus/provider": "^3.2.0",

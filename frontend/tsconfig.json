@@ -5,7 +5,8 @@
     "**/.server/**/*",
     "**/.client/**/*",
     ".react-router/types/**/*",
-    "../common/database"
+    "../common/database",
+    "../common/lib/utils.ts"
   ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],

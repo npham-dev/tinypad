@@ -1,6 +1,6 @@
+import { tryCatch } from "common/lib/try-catch";
 import { createCookie } from "react-router";
 import z from "zod";
-import { tryCatch } from "../lib/try-catch";
 
 const schema = z.object({
   name: z.string(),

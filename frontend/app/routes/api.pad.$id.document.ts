@@ -2,9 +2,9 @@
 // I think this shouldn't be in a loader because we really only need one snapshot on the client
 // doesn't need to refresh or anything, yjs should handle it
 
+import { tryCatch } from "common/lib/try-catch";
 import z from "zod";
 import { internalServerError, notAuthorized, notFound } from "~/lib/response";
-import { tryCatch } from "~/lib/try-catch";
 import { getUserCookie } from "~/services/cookies.server";
 import type { Route } from "./+types/api.pad.$id";
 
