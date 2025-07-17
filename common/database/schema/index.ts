@@ -24,14 +24,14 @@ export const pads = t.pgTable("pads", {
 export const padSnapshots = t.pgTable("pad_snapshots", {
   id: t.integer().notNull().primaryKey().generatedAlwaysAsIdentity(),
   padId: t.uuid().references(() => pads.id),
-  document: bytea(),
+  document: bytea().notNull(),
   createdAt: timestamp.createdAt,
 });
 
 export const padUpdates = t.pgTable("pad_updates", {
   id: t.integer().notNull().primaryKey().generatedAlwaysAsIdentity(),
   padId: t.uuid().references(() => pads.id),
-  delta: bytea(),
+  delta: bytea().notNull(),
   createdAt: timestamp.createdAt,
 });
 
