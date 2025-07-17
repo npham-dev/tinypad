@@ -14,13 +14,14 @@
   "license": "ISC",
   "packageManager": "pnpm@10.10.0",
   "dependencies": {
-    "common": "workspace:*",
-    "drizzle-orm": "^0.44.3",
     "@hocuspocus/server": "^3.2.0",
+    "common": "workspace:*",
     "cookie": "^1.0.2",
     "dotenv": "^17.2.0",
+    "drizzle-orm": "^0.44.3",
     "jsonwebtoken": "^9.0.2",
     "tsx": "^4.20.3",
+    "yjs": "^13.6.27",
     "zod": "^3.25.76"
   },
   "devDependencies": {
