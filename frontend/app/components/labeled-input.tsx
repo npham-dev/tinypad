@@ -180,7 +180,7 @@ const PasswordInput: React.FC<LabeledInputProps> = ({
       />
       <IconButton
         alt="Show Password"
-        className="absolute top-1/2 right-1 -translate-y-1/2"
+        className="absolute right-1 top-1/2 -translate-y-1/2"
         onClick={() => setShow((prevShow) => !prevShow)}
         type="button"
       >

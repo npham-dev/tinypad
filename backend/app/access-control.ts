@@ -1,10 +1,9 @@
-import "dotenv/config";
-import jwt from "jsonwebtoken";
 import { db } from "common/database";
 import { pads } from "common/database/schema";
-import { eq } from "drizzle-orm";
-import { z } from "zod";
 import { tryCatch } from "common/lib/try-catch";
+import { eq } from "drizzle-orm";
+import jwt from "jsonwebtoken";
+import { z } from "zod";
 
 const jwtSchema = z.object({
   pads: z.array(z.string()),

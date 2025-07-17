@@ -11,7 +11,7 @@ export const StatusBar = () => {
   const user = useUser();
 
   return (
-    <View className="text-foreground-dimmest shrink-0 flex-row items-center justify-between select-none">
+    <View className="text-foreground-dimmest shrink-0 select-none flex-row items-center justify-between">
       <View className="flex-row">
         <StatusAction>
           <View

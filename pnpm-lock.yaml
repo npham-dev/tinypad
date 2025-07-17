@@ -66,6 +66,9 @@ importers:
       drizzle-orm:
         specifier: ^0.44.3
         version: 0.44.3(@types/pg@8.15.4)(pg@8.16.3)
+      yjs:
+        specifier: ^13.6.27
+        version: 13.6.27
     devDependencies:
       drizzle-kit:
         specifier: ^0.31.4
@@ -137,8 +140,8 @@ importers:
         specifier: ^9.0.2
         version: 9.0.2
       natmfat:
-        specifier: ^0.0.45
-        version: 0.0.45(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        specifier: ^0.0.46
+        version: 0.0.46(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       pg:
         specifier: ^8.16.3
         version: 8.16.3
@@ -2659,8 +2662,8 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  natmfat@0.0.45:
-    resolution: {integrity: sha512-Q1h+0nkUlKmx6aHLbrwuhzhdBuJAIUyGROhLCMakZq6NK3ZDZbiUxlx4CXNHFd0xSUjofIDK0nNK45/v02jjdQ==}
+  natmfat@0.0.46:
+    resolution: {integrity: sha512-jipjh0HVtf8R3F8VCB7vVkkFH9B3v+miEu1XmQR4nGKeh6hKRW3+xMfkAwx+20knodmK1CBzj8nV4xGFdQoJOA==}
     peerDependencies:
       react: ^19.0.0
       react-dom: ^19.0.0
@@ -5182,7 +5185,7 @@ snapshots:
 
   '@types/pg@8.15.4':
     dependencies:
-      '@types/node': 20.19.8
+      '@types/node': 24.0.14
       pg-protocol: 1.10.3
       pg-types: 2.2.0
 
@@ -5854,7 +5857,7 @@ snapshots:
 
   nanoid@3.3.11: {}
 
-  natmfat@0.0.45(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  natmfat@0.0.46(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       autosize: 6.0.1
       class-variance-authority: 0.7.1

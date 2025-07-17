@@ -21,6 +21,9 @@ import { tokens } from "natmfat/lib/tokens";
 import { useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
+// @todo https://tiptap.dev/docs/conversion/getting-started/overview
+// export options
+
 const commands: Record<
   string,
   {
@@ -78,7 +81,7 @@ export function Clui() {
     <>
       <Interactive variant="fill">
         <View
-          className="text-foreground-dimmest hover:text-foreground-dimmer h-8 w-72 max-w-full shrink-1 flex-row items-center justify-between gap-2 px-1 select-none"
+          className="text-foreground-dimmest hover:text-foreground-dimmer shrink-1 h-8 w-72 max-w-full select-none flex-row items-center justify-between gap-2 px-1"
           onClick={() => setOpen(true)}
         >
           <Text className="pl-2">Search & run commands</Text>

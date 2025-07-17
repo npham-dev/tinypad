@@ -19,7 +19,6 @@ import { renameSchema } from "./action-schema";
 import { Editor } from "./components/editor";
 import { Header } from "./components/header";
 import { StatusBar } from "./components/status-bar";
-import { UserContextProvider } from "./hooks/use-user";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const result = await tryCatch(
@@ -107,29 +106,27 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Page({ loaderData }: Route.ComponentProps) {
   return (
-    <UserContextProvider name={loaderData.name} token={loaderData.token}>
-      <View className="h-screen">
-        <Header />
-        <View className="relative h-full flex-1 flex-row gap-2 overflow-hidden">
-          <View
-            className="border-outline-dimmest relative h-full w-full flex-1 overflow-y-auto border-y md:pt-16"
-            style={{
-              background:
-                "color-mix(in srgb, var(--interactive-background) 60%, var(--surface-background))",
-            }}
+    <View className="h-screen">
+      <Header />
+      <View className="relative h-full flex-1 flex-row gap-2 overflow-hidden">
+        <View
+          className="border-outline-dimmest relative h-full w-full flex-1 overflow-y-auto border-y md:pt-16"
+          style={{
+            background:
+              "color-mix(in srgb, var(--interactive-background) 60%, var(--surface-background))",
+          }}
+        >
+          <Surface
+            className="mx-auto h-fit w-full max-w-4xl flex-1 px-16 pt-16"
+            elevated
           >
-            <Surface
-              className="mx-auto h-fit w-full max-w-4xl flex-1 px-16 pt-16"
-              elevated
-            >
-              <ClientOnly>{() => <Editor />}</ClientOnly>
-              <View className="h-16"></View>
-            </Surface>
-          </View>
+            <ClientOnly>{() => <Editor />}</ClientOnly>
+            <View className="h-16"></View>
+          </Surface>
         </View>
-
-        <StatusBar />
       </View>
-    </UserContextProvider>
+
+      <StatusBar />
+    </View>
   );
 }

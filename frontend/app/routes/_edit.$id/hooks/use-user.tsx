@@ -1,7 +1,7 @@
 import { omit } from "common/lib/utils";
-import { createContext, useContext } from "react";
-import { randomName } from "~/lib/random-name";
+import { useLoaderData } from "react-router";
 import { stringToColor } from "~/lib/string-to-color";
+import type { loader } from "..";
 
 // technically unnecessary because useLoaderData exists
 // but it is a nicer abstraction
@@ -14,27 +14,15 @@ export type User = {
 
 export type PublicUser = Pick<User, "name" | "color">;
 
-type UserContext = Pick<User, "name" | "token">;
-const UserContext = createContext<UserContext>({
-  name: randomName(),
-  token: null,
-});
-
 export function useUser(): User {
-  const user = useContext(UserContext);
+  const { name, token } = useLoaderData<typeof loader>();
   return {
-    ...user,
-    color: stringToColor(user.name),
+    name,
+    token,
+    color: stringToColor(name),
   };
 }
 
 export function publicUser(user: User): PublicUser {
   return omit(user, ["token"]);
 }
-
-export const UserContextProvider = ({
-  children,
-  ...props
-}: UserContext & { children: React.ReactNode }) => {
-  return <UserContext.Provider value={props}>{children}</UserContext.Provider>;
-};

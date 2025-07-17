@@ -4,6 +4,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "common/*"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "fmt": "prettier --write ."

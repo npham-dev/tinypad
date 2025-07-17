@@ -1,9 +1,11 @@
 import { Server } from "@hocuspocus/server";
-import { canJoinRoom } from "./access-control";
-import * as Y from "yjs";
 import { db } from "common/database";
-import { pads, padSnapshots, padUpdates } from "common/database/schema";
-import { and, desc, eq, asc, gt } from "drizzle-orm";
+import { padSnapshots, padUpdates } from "common/database/schema";
+import { loadDocument } from "common/database/services/load-document";
+import "dotenv/config";
+import * as Y from "yjs";
+import { canJoinRoom } from "./access-control";
+
 const NUM_UPDATE_BEFORE_SNAPSHOT = 30;
 
 const stateVectors = new Map<string, Uint8Array>();
@@ -39,41 +41,7 @@ const server = new Server({
     stateVectors.set(documentName, Y.encodeStateVector(document));
   },
   async onLoadDocument({ documentName }) {
-    // get latest state vector, if we have it
-    const document = new Y.Doc();
-
-    // get latest snapshot from db & rebuild from there
-    const [snapshot] = await db
-      .select({
-        document: padSnapshots.document,
-        createdAt: padSnapshots.createdAt,
-      })
-      .from(padSnapshots)
-      .where(eq(padSnapshots.padId, documentName))
-      .orderBy(desc(padSnapshots.createdAt))
-      .limit(1);
-    if (snapshot) {
-      Y.applyUpdate(document, new Uint8Array(snapshot.document));
-    }
-
-    // get all updates from snapshot
-    const updates = await db
-      .select({
-        delta: padUpdates.delta,
-        createdAt: padUpdates.createdAt,
-      })
-      .from(padUpdates)
-      .where(
-        and(
-          eq(padUpdates.padId, documentName),
-          snapshot && gt(padUpdates.createdAt, snapshot.createdAt),
-        ),
-      )
-      .orderBy(asc(padUpdates.createdAt));
-    for (const update of updates) {
-      Y.applyUpdate(document, update.delta);
-    }
-    return document;
+    return loadDocument(documentName);
   },
   async onAuthenticate(data) {
     data.connectionConfig.isAuthenticated = await canJoinRoom(
