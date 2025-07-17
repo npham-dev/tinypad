@@ -1,3 +1,4 @@
+import { omit } from "common/lib/utils";
 import {
   IconButton,
   Input,
@@ -189,14 +190,6 @@ const PasswordInput: React.FC<LabeledInputProps> = ({
     </View>
   );
 };
-
-function omit<T, K extends keyof T>(record: T, keys: K[]): Omit<T, K> {
-  const shallow: T = { ...record };
-  for (const key of keys) {
-    delete shallow[key];
-  }
-  return shallow as Omit<T, K>;
-}
 
 /**
  * Get the default length from the provided value or defaultValue so it can be displayed to the user

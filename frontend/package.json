@@ -30,7 +30,7 @@
     "invariant": "^2.2.4",
     "isbot": "^5.1.28",
     "jsonwebtoken": "^9.0.2",
-    "natmfat": "^0.0.46",
+    "natmfat": "^0.0.47",
     "pg": "^8.16.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

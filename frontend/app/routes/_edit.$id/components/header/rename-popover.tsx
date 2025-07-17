@@ -21,7 +21,7 @@ import {
   LabeledMultilineInput,
 } from "~/components/labeled-input";
 import type { loader } from "../..";
-import { renameSchema } from "../../action-schema";
+import { updatePadSchema } from "../../action-schema";
 import { useDirty } from "../../hooks/use-dirty";
 import { usePadId } from "../../hooks/use-pad-id";
 
@@ -34,7 +34,7 @@ export function RenamePopover() {
   const { dirty, listeners } = useDirty({ resetKey: open });
   const [form, fields] = useForm({
     onValidate({ formData }) {
-      return parseWithZod(formData, { schema: renameSchema });
+      return parseWithZod(formData, { schema: updatePadSchema });
     },
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
@@ -66,7 +66,7 @@ export function RenamePopover() {
           reloadDocument={false}
           className="flex w-80 flex-col gap-3"
         >
-          <input type="hidden" name="intent" value="rename" />
+          <input type="hidden" name="intent" value="update" />
           <input type="hidden" name="id" value={id} />
           <LabeledInput
             label="Name"

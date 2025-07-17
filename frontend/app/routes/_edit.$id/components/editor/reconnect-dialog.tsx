@@ -15,7 +15,7 @@ export function ReconnectDialog(args: { open: boolean }) {
       <DialogContent className="gap-3 [&>[aria-label='Close']]:hidden">
         <DialogTitle>Please Refresh</DialogTitle>
         <DialogDescription>
-          Your connection to tinypad was interrupted.
+          Your connection to Tinypad was interrupted.
         </DialogDescription>
 
         <Button

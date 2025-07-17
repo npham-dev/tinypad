@@ -7,7 +7,11 @@ export const pads = t.pgTable("pads", {
 
   name: t.varchar({ length: 256 }).notNull(),
   description: t.varchar({ length: 1000 }).notNull().default(""),
-  bannerImage: t.varchar(),
+  // supposedly keywords don't have an impact on seo anymore
+  // this will be a comma separated list (5 tags, each can be 30 chars long)
+  keywords: t.varchar({ length: 150 }),
+  coverImage: t.varchar(),
+  iconImage: t.varchar(),
   password: t.varchar({ length: 80 }),
   public: t.boolean().default(true).notNull(),
 

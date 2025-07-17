@@ -42,7 +42,7 @@ export const Editor = () => {
           provider.on("synced", () => {
             if (currentEditor.isEmpty) {
               currentEditor.commands.setContent(
-                "<h1>Welcome to tinypad!</h1><p>tinypad is a smol multiplayer text editor with Markdown support.</p>",
+                "<h1>Welcome to Tinypad!</h1><p>Tinypad is a smol multiplayer text editor with Markdown support.</p>",
               );
             }
           });

@@ -15,7 +15,7 @@ import {
   standardResponse,
 } from "~/lib/response";
 import { createAccessControl } from "~/services/access-control.server";
-import { renameSchema } from "./action-schema";
+import { updatePadSchema } from "./action-schema";
 import { Editor } from "./components/editor";
 import { Header } from "./components/header";
 import { StatusBar } from "./components/status-bar";
@@ -60,8 +60,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   switch (formData.get("intent")) {
-    case "rename": {
-      const submission = parseWithZod(formData, { schema: renameSchema });
+    case "update": {
+      const submission = parseWithZod(formData, { schema: updatePadSchema });
       if (submission.status !== "success") {
         return submission.reply();
       }
@@ -82,9 +82,12 @@ export async function action({ request }: Route.ActionArgs) {
           .update(pads)
           .set({
             name: submission.value.title,
-            description: submission.value.description || "",
+            description: submission.value.description,
             password: passwordResult.data,
-            public: submission.value.privacy === "public",
+            public:
+              typeof submission.value.privacy === "undefined"
+                ? undefined
+                : submission.value.privacy === "public",
           })
           .where(eq(pads.id, submission.value.id)),
       );
