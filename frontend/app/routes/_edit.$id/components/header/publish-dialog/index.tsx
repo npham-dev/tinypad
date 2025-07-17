@@ -26,6 +26,7 @@ import { tokens } from "natmfat/lib/tokens";
 import { type ComponentProps, Fragment, type ReactNode, useState } from "react";
 import { Labeled, LabeledInput } from "~/components/labeled-input";
 import { MaxLengthText } from "~/components/max-length-text";
+import { Preview, PreviewSkeleton } from "./preview";
 import { Tag, TagInput } from "./tag";
 
 // @todo fix types
@@ -217,7 +218,11 @@ export function PublishDialog(props: CreatePostDialogProps) {
             className="w-full flex-1 overflow-hidden p-4"
           >
             <Text color="dimmer">Preview</Text>
-            <View className="h-80 gap-4 px-20 py-10">
+            <View className="pointer-events-none select-none gap-6 px-10">
+              <PreviewSkeleton variant="bottom" />
+              <Preview name={heading} description={body} />
+              <PreviewSkeleton variant="top" />
+
               {/* <PostSkeleton variant="bottom" />
               <PostPreview
                 author={user}
