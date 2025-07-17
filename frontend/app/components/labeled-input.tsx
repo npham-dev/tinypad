@@ -34,7 +34,7 @@ export type LabeledProps = {
    */
   errors?: string[];
 
-  errorId: string;
+  errorId?: string;
 
   inlineError?: boolean;
 
@@ -55,6 +55,7 @@ const inputProps = ({
     className: cn(className, errors && "border-red-default"),
     "aria-required": required,
     required: undefined,
+    autoComplete: "off",
     ...(errors
       ? {
           "aria-invalid": "true",

@@ -20,10 +20,10 @@ import {
   LabeledInput,
   LabeledMultilineInput,
 } from "~/components/labeled-input";
-import type { loader } from "../..";
 import { updatePadSchema } from "../../action-schema";
 import { useDirty } from "../../hooks/use-dirty";
 import { usePadId } from "../../hooks/use-pad-id";
+import type { loader } from "../../server/loader.server";
 
 export function RenamePopover() {
   const { pad } = useLoaderData<typeof loader>();

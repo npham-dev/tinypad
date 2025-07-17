@@ -6,7 +6,6 @@ import {
   DialogTitle,
   DialogTrigger,
   Heading,
-  MultilineInput,
   RiArrowLeftIcon,
   RiArrowRightIcon,
   RiArticleIcon,
@@ -23,39 +22,49 @@ import {
   VisuallyHidden,
 } from "natmfat";
 import { tokens } from "natmfat/lib/tokens";
-import { type ComponentProps, Fragment, type ReactNode, useState } from "react";
-import { Labeled, LabeledInput } from "~/components/labeled-input";
+import { type ComponentProps, Fragment, useEffect, useState } from "react";
+import { useLoaderData } from "react-router";
+import {
+  LabeledInput,
+  LabeledMultilineInput,
+} from "~/components/labeled-input";
 import { MaxLengthText } from "~/components/max-length-text";
-import { Preview, PreviewSkeleton } from "./preview";
+import type { loader } from "../../../server/loader.server";
+import {
+  DEFAULT_PROJECT_BODY,
+  DEFAULT_PROJECT_HEADING,
+  Preview,
+  PreviewSkeleton,
+} from "./preview";
 import { Tag, TagInput } from "./tag";
 
 // @todo fix types
 
 const TABS = ["basics", "tags", "icon", "cover_page"] as const;
 const MAX_TAGS = 5;
-
-const DEFAULT_PROJECT_HEADING = "My first website";
-const DEFAULT_PROJECT_BODY = "Say hello to the world!";
-
 type TabValue = (typeof TABS)[number];
 
-type CreatePostDialogProps = {
-  children?: ReactNode;
-};
+export function PublishDialog() {
+  const { pad } = useLoaderData<typeof loader>();
 
-export function PublishDialog(props: CreatePostDialogProps) {
   // handle navigation between panels
   const [tab, setTab] = useState<TabValue>("basics");
 
   // basics tab
-  const [heading, setHeading] = useState("");
-  const [body, setBody] = useState("");
+  const [heading, setHeading] = useState(pad.name);
+  const [body, setBody] = useState(pad.description);
 
   // tags tab
   const [tags, setTags] = useState<string[]>([]);
   const [tagValue, setTagValue] = useState("");
 
   const index = TABS.indexOf(tab);
+
+  // ensure pad data is up to date
+  useEffect(() => {
+    setHeading(pad.name);
+    setBody(pad.description);
+  }, [pad.name, pad.description]);
 
   return (
     <Dialog maxWidth={872}>
@@ -94,21 +103,22 @@ export function PublishDialog(props: CreatePostDialogProps) {
               </TabsList>
               <TabsContent value="basics">
                 <LabeledInput
-                  label="Pad name"
+                  label="Name"
                   name="heading"
                   maxLength={60}
                   placeholder={DEFAULT_PROJECT_HEADING}
                   value={heading}
                   onChange={(e) => setHeading(e.target.value)}
                 />
-                <Labeled label="Pad description" name="body" asChild>
-                  <MultilineInput
-                    value={body}
-                    onChange={(e) => setBody(e.target.value)}
-                    placeholder={DEFAULT_PROJECT_BODY}
-                    maxLength={600}
-                  />
-                </Labeled>
+                <LabeledMultilineInput
+                  label="Description"
+                  name="body"
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  placeholder={DEFAULT_PROJECT_BODY}
+                  maxLength={600}
+                  className="min-h-18 resize-none"
+                />
               </TabsContent>
               <TabsContent value="tags">
                 <View className="flex-row items-center justify-between">

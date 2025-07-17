@@ -1,7 +1,7 @@
 import { omit } from "common/lib/utils";
 import { useLoaderData } from "react-router";
 import { stringToColor } from "~/lib/string-to-color";
-import type { loader } from "..";
+import type { loader } from "../server/loader.server";
 
 // technically unnecessary because useLoaderData exists
 // but it is a nicer abstraction
