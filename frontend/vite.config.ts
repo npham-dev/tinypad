@@ -14,9 +14,4 @@ export default defineConfig({
       plugins: [postcssNesting],
     },
   },
-  // resolve: {
-  //   alias: {
-  //     common: path.resolve(__dirname, "../common"),
-  //   },
-  // },
 });
