@@ -1,7 +1,10 @@
 import "dotenv/config";
 import jwt from "jsonwebtoken";
+import { db } from "common/database";
+import { pads } from "common/database/schema";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { tryCatch } from "./lib/try-catch";
+import { tryCatch } from "common/lib/try-catch";
 
 const jwtSchema = z.object({
   pads: z.array(z.string()),
@@ -33,24 +36,16 @@ async function getPads(token: string): Promise<string[]> {
 }
 
 export async function canJoinRoom(token: string, id: string): Promise<boolean> {
-  const pads = await getPads(token);
-
   // if pad is public, anyone can join
-  // if we get anything other than 200 then assume we can't join the room
   const responseResult = await tryCatch(
-    fetch(new URL(`/api/pad/${id}`, process.env.FRONTEND_BASE_URL)),
+    db.select({ public: pads.public }).from(pads).where(eq(pads.id, id)),
   );
-  if (responseResult.error !== null || responseResult.data.status !== 200) {
+  if (responseResult.error !== null || responseResult.data.length === 0) {
     return false;
-  }
-
-  const jsonResult = await tryCatch(responseResult.data.json());
-  if (jsonResult.error !== null) {
-    return false;
-  } else if ("public" in jsonResult.data && jsonResult.data["public"]) {
+  } else if (responseResult.data[0].public) {
     return true;
   }
 
   // otherwise, verify jwt
-  return pads.includes(id);
+  return (await getPads(token)).includes(id);
 }

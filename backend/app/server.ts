@@ -1,5 +1,6 @@
 import { Server } from "@hocuspocus/server";
 import { canJoinRoom } from "./access-control";
+
 // https://tiptap.dev/docs/hocuspocus/getting-started
 const server = new Server({
   port: parseInt(process.env.PORT || "4444"),
