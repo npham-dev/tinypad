@@ -51,10 +51,7 @@ export async function action({ request }: Route.ActionArgs) {
         throw internalServerError();
       }
 
-      return standardResponse({
-        success: true,
-        message: "Updated pad",
-      });
+      return standardResponse({ message: "Updated pad" });
     }
   }
 
