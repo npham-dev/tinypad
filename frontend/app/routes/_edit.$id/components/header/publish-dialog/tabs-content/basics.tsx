@@ -36,7 +36,7 @@ export function BasicsTabContent() {
     form,
     tab: "basics",
     onSubmit: () =>
-      dirty
+      dirty.current
         ? {
             title: snap.name,
             description: snap.description,

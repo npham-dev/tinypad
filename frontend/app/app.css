@@ -160,6 +160,10 @@ https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-bei
 
   img {
     border: 1px solid var(--outline-dimmest);
+
+    &.ProseMirror-selectednode {
+      border-color: var(--primary-default);
+    }
   }
 
   hr {

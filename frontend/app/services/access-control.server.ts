@@ -29,7 +29,7 @@ export const createAccessControl = async (
 // note: most of the methods in here are designed to fail silently
 // for example, if the token is in the incorrect format, we just return no pads
 
-class AccessControl {
+export class AccessControl {
   private request: Request;
 
   private name: string;
@@ -85,10 +85,7 @@ class AccessControl {
   async canManagePad(id: string, isPublic?: boolean): Promise<boolean> {
     if (typeof isPublic === "undefined") {
       // check if pad is public
-      const result = await tryCatch(
-        db.select({ public: pads.public }).from(pads).where(eq(pads.id, id)),
-      );
-
+      const result = await AccessControl.isPublic(id);
       if (result.error !== null || result.data.length === 0) {
         return false;
       } else if (result.data[0].public) {
@@ -122,6 +119,12 @@ class AccessControl {
       { pads } satisfies z.infer<typeof jwtSchema>,
       process.env.JWT_SECRET!,
       { expiresIn: "7 days" },
+    );
+  }
+
+  static isPublic(id: string) {
+    return tryCatch(
+      db.select({ public: pads.public }).from(pads).where(eq(pads.id, id)),
     );
   }
 }

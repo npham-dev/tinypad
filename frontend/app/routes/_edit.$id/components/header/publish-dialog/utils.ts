@@ -4,7 +4,24 @@ import type z from "zod";
 import type { StandardResponse } from "~/lib/response";
 import type { updatePadSchema } from "~/routes/api.pad.$id/action-schema";
 
-export async function publishPad() {}
+export async function publishPad(args: { padId: string; content: string }) {
+  const responseResult = await tryCatch(
+    fetch(`/api/pad/${args.padId}/publish`, {
+      method: "POST",
+      body: JSON.stringify({ content: args.content }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }),
+  );
+  if (responseResult.error !== null || responseResult.data.status !== 200) {
+    toast({
+      type: "error",
+      description: "Failed to publish pad",
+    });
+    return;
+  }
+}
 
 export async function updatePad(args: {
   formData: z.infer<typeof updatePadSchema>;

@@ -2,7 +2,12 @@ import { db } from "common/database";
 import { pads } from "common/database/schema";
 import { tryCatch } from "common/lib/try-catch";
 import { eq } from "drizzle-orm";
-import { notFound, standardResponse, StatusCode } from "~/lib/response";
+import {
+  notAuthorized,
+  notFound,
+  standardResponse,
+  StatusCode,
+} from "~/lib/response";
 import { createAccessControl } from "~/services/access-control.server";
 import { logger } from "~/services/logger.server";
 import type { Route } from "../api.pad.$id/+types";
@@ -18,10 +23,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   if (request.method === "POST") {
     const ac = await createAccessControl(request);
     if (!(await ac.canManagePad(params.id))) {
-      return standardResponse({
-        message: "Unauthorized",
-        status: StatusCode.UNAUTHORIZED,
-      });
+      return notAuthorized();
     }
 
     const bodyResult = await tryCatch(request.json());

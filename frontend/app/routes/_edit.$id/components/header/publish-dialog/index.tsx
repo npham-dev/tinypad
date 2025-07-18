@@ -1,3 +1,4 @@
+import confetti from "canvas-confetti";
 import {
   Button,
   Dialog,
@@ -22,18 +23,15 @@ import {
 import { tokens } from "natmfat/lib/tokens";
 import { Fragment, useCallback, useState } from "react";
 import { useSnapshot } from "valtio";
+import { usePadId } from "~/routes/_edit.$id/hooks/use-pad-id";
+import { editorStore } from "~/routes/_edit.$id/stores/editor-store";
 import { Preview, PreviewSkeleton } from "./preview";
-import {
-  SyncTabsStore,
-  TABS,
-  tabsEmitter,
-  tabsStore,
-  type TabValue,
-} from "./tabs";
+import { SyncTabsStore, TABS, tabsEmitter, type TabValue } from "./tabs";
 import { BasicsTabContent } from "./tabs-content/basics";
 import { CoverPageTabsContent } from "./tabs-content/cover-page";
 import { IconTabsContent } from "./tabs-content/icon";
 import { TagsTabContent } from "./tabs-content/tags";
+import { publishPad } from "./utils";
 
 export function PublishDialog() {
   // handle navigation between panels
@@ -41,7 +39,7 @@ export function PublishDialog() {
 
   // tags tab
   const index = TABS.indexOf(tab);
-  const snap = useSnapshot(tabsStore);
+  const padId = usePadId();
 
   const submitTab = useCallback(
     (tab?: TabValue) => {
@@ -51,6 +49,7 @@ export function PublishDialog() {
   );
 
   const [open, setOpen] = useState(false);
+  const snap = useSnapshot(editorStore);
 
   return (
     <Dialog
@@ -142,9 +141,25 @@ export function PublishDialog() {
                   }}
                   onClick={() => {
                     submitTab();
+                    const content = snap.editor?.getHTML();
+                    if (!content) {
+                      return;
+                    }
+                    publishPad({ padId, content });
                     setOpen(false);
-                    // confetti
-                    // open share link
+                    setTab("basics"); // onOpenChange won't trigger w/ manual state changes
+                    confetti({
+                      angle: 45,
+                      spread: 60,
+                      particleCount: 100,
+                      origin: { x: 0, y: 1 },
+                    });
+                    confetti({
+                      angle: 180 - 45,
+                      spread: 60,
+                      particleCount: 100,
+                      origin: { x: 1, y: 1 },
+                    });
                   }}
                   type="submit"
                 >

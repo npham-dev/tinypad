@@ -50,6 +50,9 @@ export function CoverPageTabsContent() {
           className="flex-1"
           disabled={!snap.coverImage}
           onClick={() => {
+            if (tabsStore.coverImage) {
+              URL.revokeObjectURL(tabsStore.coverImage);
+            }
             tabsStore.coverImage = null;
             resetFile();
           }}
