@@ -39,3 +39,9 @@ export function standardResponse<T>(args: {
     },
   });
 }
+
+export type StandardResponse<T = unknown> = {
+  message: string;
+  data?: T;
+  status: StatusCode;
+};

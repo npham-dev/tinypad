@@ -19,6 +19,8 @@
     "@tiptap/core": "^3.0.6",
     "@tiptap/extension-collaboration": "^3.0.6",
     "@tiptap/extension-collaboration-caret": "^3.0.6",
+    "@tiptap/extension-file-handler": "^3.0.7",
+    "@tiptap/extension-image": "^3.0.7",
     "@tiptap/extension-link": "^3.0.6",
     "@tiptap/extension-text-style": "^3.0.6",
     "@tiptap/pm": "^3.0.6",

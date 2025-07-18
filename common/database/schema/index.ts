@@ -9,7 +9,7 @@ export const pads = t.pgTable("pads", {
   description: t.varchar({ length: 1000 }).notNull().default(""),
   // supposedly keywords don't have an impact on seo anymore
   // this will be a comma separated list (5 tags, each can be 30 chars long)
-  keywords: t.varchar({ length: 150 }),
+  tags: t.varchar({ length: 150 }),
   coverImage: t.varchar(),
   iconImage: t.varchar(),
   password: t.varchar({ length: 80 }),

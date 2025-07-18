@@ -1,16 +1,12 @@
 import { tryCatch } from "common/lib/try-catch";
 import { v4 as uuidv4 } from "uuid";
-import z from "zod";
 import { notFound, standardResponse, StatusCode } from "~/lib/response";
 import { logger } from "~/services/logger.server";
-import { bucket } from "../services/storage.server";
-import type { Route } from "./+types/api.generate_signed_url";
+import { bucket } from "../../services/storage.server";
+import type { Route } from "../api.generateSignedPolicy/+types";
+import { schema } from "./action-schema";
 
 const log = logger.child({ module: "api.generate_signed_url" });
-
-const schema = z.object({
-  contentType: z.union([z.literal("image/png"), z.literal("image/jpeg")]),
-});
 
 export async function action({ request }: Route.ActionArgs) {
   if (request.method === "POST") {
@@ -56,11 +52,14 @@ export async function action({ request }: Route.ActionArgs) {
     }
 
     const policy = signedResult.data[0];
-    return {
-      image: `https://storage.googleapis.com/${process.env.GCLOUD_BUCKET_NAME}/${filename}`,
-      url: policy.url,
-      fields: policy.fields,
-    };
+    return standardResponse({
+      message: "Created presigned post policy url",
+      data: {
+        image: `https://storage.googleapis.com/${process.env.GCLOUD_BUCKET_NAME}/${filename}`,
+        url: policy.url,
+        fields: policy.fields,
+      },
+    });
   }
   throw notFound();
 }

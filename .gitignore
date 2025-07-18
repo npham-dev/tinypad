@@ -2,3 +2,6 @@
 node_modules/
 
 .env
+
+# gcloud bucket service account
+prime-imagery-466222-h5-561372e61441.json

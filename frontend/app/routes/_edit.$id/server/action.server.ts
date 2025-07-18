@@ -6,14 +6,19 @@ import { db } from "common/database";
 import { pads } from "common/database/schema";
 import { tryCatch } from "common/lib/try-catch";
 import { eq } from "drizzle-orm";
-import {
-  internalServerError,
-  notFound,
-  standardResponse,
-} from "~/lib/response";
-import { updatePadSchema } from "../action-schema";
+import { notFound, standardResponse, StatusCode } from "~/lib/response";
+import { updatePadSchema } from "./action-schema";
 
-export async function action({ request }: Route.ActionArgs) {
+function hashPassword(password: string | undefined) {
+  if (typeof password === "string") {
+    return password.length === 0
+      ? Promise.resolve(null)
+      : bcrypt.hash(password, 10);
+  }
+  return Promise.resolve(undefined);
+}
+
+export async function action({ request, params }: Route.ActionArgs) {
   const formData = await request.formData();
   switch (formData.get("intent")) {
     case "update": {
@@ -23,35 +28,39 @@ export async function action({ request }: Route.ActionArgs) {
       }
 
       const passwordResult = await tryCatch(
-        submission.value.password
-          ? bcrypt.hash(submission.value.password, 10)
-          : Promise.resolve(undefined),
+        hashPassword(submission.value.password),
       );
       if (passwordResult.error !== null) {
-        // @todo more descriptive errors than just 500 (use standard response + enums)
-        throw internalServerError();
+        return standardResponse({
+          message: "Failed to hash password",
+          status: StatusCode.INTERNAL_SERVER_ERROR,
+        });
       }
 
       // @todo check auth
+
       const updateResult = await tryCatch(
         db
           .update(pads)
           .set({
+            ...submission.value,
             name: submission.value.title,
-            description: submission.value.description,
             password: passwordResult.data,
             public:
               typeof submission.value.privacy === "undefined"
                 ? undefined
                 : submission.value.privacy === "public",
           })
-          .where(eq(pads.id, submission.value.id)),
+          .where(eq(pads.id, params.id)),
       );
       if (updateResult.error !== null) {
-        throw internalServerError();
+        return standardResponse({
+          message: "Failed to update pad",
+          status: StatusCode.INTERNAL_SERVER_ERROR,
+        });
       }
 
-      return standardResponse({ message: "Updated pad" });
+      return standardResponse({ message: "Successfully updated pad" });
     }
   }
 

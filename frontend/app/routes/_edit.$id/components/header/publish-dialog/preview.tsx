@@ -21,12 +21,12 @@ export function PreviewSkeleton(props: PreviewSkeletonProps) {
     >
       <View className="flex-row items-center gap-3">
         <Surface elevated className="h-8 w-8"></Surface>
-        <View className="gap-0.5">
+        <View className="gap-1">
           <Surface elevated className="h-4 w-14" />
-          <Surface elevated className="h-3.5 w-28" />
+          <Surface elevated className="h-3 w-28" />
         </View>
       </View>
-      <View className="gap-0.5">
+      <View className="gap-1">
         <Surface elevated className="h-4 w-32"></Surface>
         <Surface elevated className="h-4 w-full"></Surface>
       </View>
@@ -45,16 +45,16 @@ export function Preview(props: PreviewProps) {
       <View className="flex-row items-center gap-3">
         <img src="/favicon.svg" className="h-8 w-8" />
         <View>
-          <Text size="small">Tinypad</Text>
+          <Text>Tinypad</Text>
           <Text size="small" color="dimmer">
             https://tinypad.com
           </Text>
         </View>
       </View>
-      <View>
+      <View className="gap-1">
         <Heading
           size="subheadDefault"
-          className="font-regular text-primary-default"
+          className="font-regular text-primary-stronger"
         >
           {props.name || DEFAULT_PROJECT_HEADING}
         </Heading>

@@ -20,21 +20,19 @@ import {
   LabeledInput,
   LabeledMultilineInput,
 } from "~/components/labeled-input";
-import { updatePadSchema } from "../../action-schema";
 import { useDirty } from "../../hooks/use-dirty";
-import { usePadId } from "../../hooks/use-pad-id";
+import { renamePadSchema } from "../../server/action-schema";
 import type { loader } from "../../server/loader.server";
 
 export function RenamePopover() {
   const { pad } = useLoaderData<typeof loader>();
-  const id = usePadId();
 
   const formRef = useRef<HTMLFormElement>(null);
   const [open, setOpen] = useState(false);
   const { dirty, listeners } = useDirty({ resetKey: open });
   const [form, fields] = useForm({
     onValidate({ formData }) {
-      return parseWithZod(formData, { schema: updatePadSchema });
+      return parseWithZod(formData, { schema: renamePadSchema });
     },
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
@@ -67,7 +65,6 @@ export function RenamePopover() {
           className="flex w-80 flex-col gap-3"
         >
           <input type="hidden" name="intent" value="update" />
-          <input type="hidden" name="id" value={id} />
           <LabeledInput
             label="Name"
             placeholder="Name your pad"

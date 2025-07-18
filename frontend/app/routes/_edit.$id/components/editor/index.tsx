@@ -5,25 +5,19 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 
 import { HocuspocusProvider } from "@hocuspocus/provider";
-import { omit } from "common/lib/utils";
+import FileHandler from "@tiptap/extension-file-handler";
+import Image from "@tiptap/extension-image";
+import { omit } from "common/lib/transform";
 import { useEffect, useState } from "react";
 import { ref } from "valtio";
 import * as Y from "yjs";
+import { allowedContentTypes } from "~/routes/api.generateSignedPolicy/action-schema";
 import { usePadId } from "../../hooks/use-pad-id";
 import { publicUser, useUser, type PublicUser } from "../../hooks/use-user";
 import { editorStore, Status } from "../../stores/editor-store";
 import { notificationStore, notify } from "../../stores/notification-store";
+import { uploadImage } from "../header/publish-dialog/utils";
 import { RichTextLink } from "./rich-text-link";
-
-// provider.on("synced", (isSynced) => {
-//   console.log("Synced with peers:", isSynced);
-// });
-// provider.awareness.on("update", () => {
-//   console.log(
-//     "Awareness changed:",
-//     Array.from(provider.awareness.getStates()),
-//   );
-// });
 
 export const Editor = () => {
   const user = useUser();
@@ -57,6 +51,27 @@ export const Editor = () => {
           // https://tiptap.dev/docs/collaboration/getting-started/install
           undoRedo: false,
           link: false,
+        }),
+        Image,
+        FileHandler.configure({
+          allowedMimeTypes: [...allowedContentTypes],
+          onPaste: (currentEditor, files, htmlContent) => {
+            files.forEach(async (file) => {
+              const uploadResult = await uploadImage({ file });
+              if (uploadResult) {
+                currentEditor
+                  .chain()
+                  .insertContentAt(currentEditor.state.selection.anchor, {
+                    type: "image",
+                    attrs: {
+                      src: uploadResult,
+                    },
+                  })
+                  .focus()
+                  .run();
+              }
+            });
+          },
         }),
         ydoc && Collaboration.configure({ document: ydoc }),
         ydoc &&

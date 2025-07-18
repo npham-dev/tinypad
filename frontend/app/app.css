@@ -158,6 +158,10 @@ https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-bei
     padding-left: 1rem;
   }
 
+  img {
+    border: 1px solid var(--outline-dimmest);
+  }
+
   hr {
     border: none;
     border-top: 1px solid var(--outline-dimmest);

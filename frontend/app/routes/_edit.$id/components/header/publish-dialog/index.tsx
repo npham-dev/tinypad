@@ -22,7 +22,13 @@ import {
   VisuallyHidden,
 } from "natmfat";
 import { tokens } from "natmfat/lib/tokens";
-import { type ComponentProps, Fragment, useEffect, useState } from "react";
+import {
+  type ComponentProps,
+  Fragment,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { useLoaderData } from "react-router";
 import {
   LabeledInput,
@@ -38,36 +44,53 @@ import {
 } from "./preview";
 import { Tag, TagInput } from "./tag";
 
-// @todo fix types
-
+// render list of tab triggers from the TABS array, allows you to easily create new tabs
 const TABS = ["basics", "tags", "icon", "cover_page"] as const;
-const MAX_TAGS = 5;
 type TabValue = (typeof TABS)[number];
 
-export function PublishDialog() {
-  const { pad } = useLoaderData<typeof loader>();
+const MAX_TAGS = 5;
 
+export function PublishDialog() {
   // handle navigation between panels
   const [tab, setTab] = useState<TabValue>("basics");
-
-  // basics tab
-  const [heading, setHeading] = useState(pad.name);
-  const [body, setBody] = useState(pad.description);
-
-  // tags tab
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagValue, setTagValue] = useState("");
-
-  const index = TABS.indexOf(tab);
+  const [completedTabs, setCompletedTabs] = useState<
+    Partial<Record<TabValue, boolean>>
+  >({});
 
   // ensure pad data is up to date
+  const { pad } = useLoaderData<typeof loader>();
+  const [heading, setHeading] = useState(pad.name);
+  const [body, setBody] = useState(pad.description);
   useEffect(() => {
     setHeading(pad.name);
     setBody(pad.description);
   }, [pad.name, pad.description]);
 
+  // tags tab
+  const [tags, setTags] = useState<string[]>([]);
+  const index = TABS.indexOf(tab);
+
+  const completeTab = useCallback(
+    (tab?: TabValue) => {
+      setCompletedTabs((prevCompletedTabs) => ({
+        ...prevCompletedTabs,
+        [tab ? tab : TABS[index]]: true,
+      }));
+    },
+    [index],
+  );
+
   return (
-    <Dialog maxWidth={872}>
+    <Dialog
+      maxWidth={872}
+      onOpenChange={(open) => {
+        // reset navigation state
+        if (!open) {
+          setTab("basics");
+          setCompletedTabs({});
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button>
           <RiArticleIcon />
@@ -85,7 +108,6 @@ export function PublishDialog() {
         <View className="flex-row">
           <Surface elevated className="relative w-2/5 gap-2 p-4">
             <Heading size="headerDefault">Publish your Tinypad</Heading>
-
             <Tabs
               variant="progress"
               value={tab}
@@ -93,10 +115,11 @@ export function PublishDialog() {
               className="h-full flex-1"
             >
               <TabsList>
-                {/* Render list of tab triggers from the TABS array, allows you to easily create new tabs */}
                 {TABS.map((tab, i) => (
                   <Fragment key={tab}>
-                    <TabsTrigger value={tab}>{formatTabTitle(tab)}</TabsTrigger>
+                    <TabsTrigger value={tab} complete={completedTabs[tab]}>
+                      {formatTabTitle(tab)}
+                    </TabsTrigger>
                     {i !== TABS.length - 1 ? <TabsSeparator /> : null}
                   </Fragment>
                 ))}
@@ -138,22 +161,15 @@ export function PublishDialog() {
                     />
                   ))}
                   <TagInput
-                    value={tagValue}
-                    onChange={(e) => {
-                      setTagValue(e.target.value);
-                    }}
                     onKeyDown={(e) => {
-                      const formattedTagValue = tagValue.trim();
-
-                      if (
-                        e.key === "Enter" &&
-                        !tags.includes(formattedTagValue)
-                      ) {
-                        setTags((prevTags) => [...prevTags, formattedTagValue]);
-                        setTagValue("");
+                      const target = e.target as HTMLInputElement;
+                      const fmtTagValue = target.value.trim();
+                      if (e.key === "Enter" && !tags.includes(fmtTagValue)) {
+                        setTags((prevTags) => [...prevTags, fmtTagValue]);
+                        target.value = "";
                       } else if (
                         e.key === "Backspace" &&
-                        tagValue.length === 0
+                        target.value.length === 0
                       ) {
                         setTags((prevTags) =>
                           prevTags.filter((_, i) => i < prevTags.length - 1),
@@ -165,17 +181,13 @@ export function PublishDialog() {
               </TabsContent>
               <TabsContent value="icon">
                 <Text>Icons make your Tinypad recognizeable from afar.</Text>
-
                 <Button>
                   <RiImageIcon />
                   Upload an icon
                 </Button>
               </TabsContent>
               <TabsContent value="cover_page">
-                <Text multiline>
-                  Cover images are the first thing a user sees in a link
-                  preview.
-                </Text>
+                <Text multiline>Cover images are useful for link embeds.</Text>
                 <View>
                   <Button>
                     <RiImageIcon />
@@ -201,7 +213,10 @@ export function PublishDialog() {
                   color="primary"
                   className="ml-auto justify-self-end"
                   type="button"
-                  onClick={() => setTab(TABS[index + 1])}
+                  onClick={() => {
+                    completeTab();
+                    setTab(TABS[index + 1]);
+                  }}
                 >
                   Next <RiArrowRightIcon />
                 </Button>
