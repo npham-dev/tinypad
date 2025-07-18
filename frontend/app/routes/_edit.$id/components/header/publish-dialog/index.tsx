@@ -9,11 +9,9 @@ import {
   RiArrowLeftIcon,
   RiArrowRightIcon,
   RiArticleIcon,
-  RiImageIcon,
   RiUploadIcon,
   Surface,
   Tabs,
-  TabsContent as TabsContentRoot,
   TabsList,
   TabsSeparator,
   TabsTrigger,
@@ -22,72 +20,45 @@ import {
   VisuallyHidden,
 } from "natmfat";
 import { tokens } from "natmfat/lib/tokens";
-import {
-  type ComponentProps,
-  Fragment,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
-import { useLoaderData } from "react-router";
-import {
-  LabeledInput,
-  LabeledMultilineInput,
-} from "~/components/labeled-input";
-import { MaxLengthText } from "~/components/max-length-text";
-import type { loader } from "../../../server/loader.server";
-import {
-  DEFAULT_PROJECT_BODY,
-  DEFAULT_PROJECT_HEADING,
-  Preview,
-  PreviewSkeleton,
-} from "./preview";
-import { Tag, TagInput } from "./tag";
-
-// render list of tab triggers from the TABS array, allows you to easily create new tabs
-const TABS = ["basics", "tags", "icon", "cover_page"] as const;
-type TabValue = (typeof TABS)[number];
-
-const MAX_TAGS = 5;
+import { Fragment, useCallback, useState } from "react";
+import { useSnapshot } from "valtio";
+import { useEmitter } from "~/routes/_edit.$id/hooks/use-emitter";
+import { Preview, PreviewSkeleton } from "./preview";
+import { TABS, tabsEmitter, tabsStore, type TabValue } from "./tabs";
+import { BasicsTabContent } from "./tabs-content/basics";
+import { CoverPageTabsContent } from "./tabs-content/cover-page";
+import { IconTabsContent } from "./tabs-content/icon";
+import { TagsTabContent } from "./tabs-content/tags";
 
 export function PublishDialog() {
   // handle navigation between panels
   const [tab, setTab] = useState<TabValue>("basics");
-  const [completedTabs, setCompletedTabs] = useState<
-    Partial<Record<TabValue, boolean>>
-  >({});
-
-  // ensure pad data is up to date
-  const { pad } = useLoaderData<typeof loader>();
-  const [heading, setHeading] = useState(pad.name);
-  const [body, setBody] = useState(pad.description);
-  useEffect(() => {
-    setHeading(pad.name);
-    setBody(pad.description);
-  }, [pad.name, pad.description]);
 
   // tags tab
-  const [tags, setTags] = useState<string[]>([]);
   const index = TABS.indexOf(tab);
+  const snap = useSnapshot(tabsStore);
 
-  const completeTab = useCallback(
-    (tab?: TabValue) => {
-      setCompletedTabs((prevCompletedTabs) => ({
-        ...prevCompletedTabs,
-        [tab ? tab : TABS[index]]: true,
-      }));
-    },
-    [index],
+  const submitTab = useCallback(() => {
+    tabsEmitter.emit("submit", { tab: TABS[index] });
+  }, [index]);
+
+  const [open, setOpen] = useState(false);
+
+  useEmitter(
+    tabsEmitter,
+    "close",
+    useCallback(() => setOpen(false), []),
   );
 
   return (
     <Dialog
       maxWidth={872}
+      open={open}
       onOpenChange={(open) => {
-        // reset navigation state
+        setOpen(open);
         if (!open) {
+          // reset navigation state on close
           setTab("basics");
-          setCompletedTabs({});
         }
       }}
     >
@@ -117,84 +88,15 @@ export function PublishDialog() {
               <TabsList>
                 {TABS.map((tab, i) => (
                   <Fragment key={tab}>
-                    <TabsTrigger value={tab} complete={completedTabs[tab]}>
-                      {formatTabTitle(tab)}
-                    </TabsTrigger>
+                    <TabsTrigger value={tab}>{formatTabTitle(tab)}</TabsTrigger>
                     {i !== TABS.length - 1 ? <TabsSeparator /> : null}
                   </Fragment>
                 ))}
               </TabsList>
-              <TabsContent value="basics">
-                <LabeledInput
-                  label="Name"
-                  name="heading"
-                  maxLength={60}
-                  placeholder={DEFAULT_PROJECT_HEADING}
-                  value={heading}
-                  onChange={(e) => setHeading(e.target.value)}
-                />
-                <LabeledMultilineInput
-                  label="Description"
-                  name="body"
-                  value={body}
-                  onChange={(e) => setBody(e.target.value)}
-                  placeholder={DEFAULT_PROJECT_BODY}
-                  maxLength={600}
-                  className="min-h-18 resize-none"
-                />
-              </TabsContent>
-              <TabsContent value="tags">
-                <View className="flex-row items-center justify-between">
-                  <Text>Tags help others find your work on the web.</Text>
-                  <MaxLengthText length={tags.length} maxLength={MAX_TAGS} />
-                </View>
-                <View className="flex-row flex-wrap gap-2">
-                  {tags.map((tag) => (
-                    <Tag
-                      key={tag}
-                      name={tag}
-                      onClose={() => {
-                        setTags((prevTags) =>
-                          prevTags.filter((currentTag) => currentTag !== tag),
-                        );
-                      }}
-                    />
-                  ))}
-                  <TagInput
-                    onKeyDown={(e) => {
-                      const target = e.target as HTMLInputElement;
-                      const fmtTagValue = target.value.trim();
-                      if (e.key === "Enter" && !tags.includes(fmtTagValue)) {
-                        setTags((prevTags) => [...prevTags, fmtTagValue]);
-                        target.value = "";
-                      } else if (
-                        e.key === "Backspace" &&
-                        target.value.length === 0
-                      ) {
-                        setTags((prevTags) =>
-                          prevTags.filter((_, i) => i < prevTags.length - 1),
-                        );
-                      }
-                    }}
-                  />
-                </View>
-              </TabsContent>
-              <TabsContent value="icon">
-                <Text>Icons make your Tinypad recognizeable from afar.</Text>
-                <Button>
-                  <RiImageIcon />
-                  Upload an icon
-                </Button>
-              </TabsContent>
-              <TabsContent value="cover_page">
-                <Text multiline>Cover images are useful for link embeds.</Text>
-                <View>
-                  <Button>
-                    <RiImageIcon />
-                    Upload a cover photo
-                  </Button>
-                </View>
-              </TabsContent>
+              <BasicsTabContent />
+              <TagsTabContent />
+              <IconTabsContent />
+              <CoverPageTabsContent />
             </Tabs>
 
             <View className="absolute bottom-0 left-0 w-full flex-row p-4">
@@ -214,7 +116,7 @@ export function PublishDialog() {
                   className="ml-auto justify-self-end"
                   type="button"
                   onClick={() => {
-                    completeTab();
+                    submitTab();
                     setTab(TABS[index + 1]);
                   }}
                 >
@@ -228,6 +130,9 @@ export function PublishDialog() {
                   className="border-primary-stronger ml-auto justify-self-end border"
                   style={{
                     boxShadow: `0 0 ${tokens.space16} ${tokens.primaryDimmer}`,
+                  }}
+                  onClick={() => {
+                    submitTab();
                   }}
                   type="submit"
                 >
@@ -245,38 +150,13 @@ export function PublishDialog() {
             <Text color="dimmer">Preview</Text>
             <View className="pointer-events-none select-none gap-6 px-10">
               <PreviewSkeleton variant="bottom" />
-              <Preview name={heading} description={body} />
+              <Preview name={snap.name} description={snap.description} />
               <PreviewSkeleton variant="top" />
-
-              {/* <PostSkeleton variant="bottom" />
-              <PostPreview
-                author={user}
-                type={PostType.PROJECT}
-                tags={tags}
-                thumbnailUrl=""
-                heading={heading || DEFAULT_PROJECT_HEADING}
-                body={body || DEFAULT_PROJECT_BODY}
-              />
-              <PostSkeleton variant="top" /> */}
             </View>
           </Surface>
         </View>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function TabsContent({
-  value,
-  children,
-  ...props
-}: Omit<ComponentProps<typeof TabsContentRoot>, "value" | "asChild"> & {
-  value: TabValue;
-}) {
-  return (
-    <TabsContentRoot value={value} asChild {...props}>
-      <View className="relative h-full flex-1 gap-4">{children}</View>
-    </TabsContentRoot>
   );
 }
 

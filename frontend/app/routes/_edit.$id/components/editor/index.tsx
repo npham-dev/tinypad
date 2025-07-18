@@ -8,6 +8,7 @@ import { HocuspocusProvider } from "@hocuspocus/provider";
 import FileHandler from "@tiptap/extension-file-handler";
 import Image from "@tiptap/extension-image";
 import { omit } from "common/lib/transform";
+import { tokens } from "natmfat/lib/tokens";
 import { useEffect, useState } from "react";
 import { ref } from "valtio";
 import * as Y from "yjs";
@@ -51,12 +52,20 @@ export const Editor = () => {
           // https://tiptap.dev/docs/collaboration/getting-started/install
           undoRedo: false,
           link: false,
+          dropcursor: {
+            color: tokens.primaryDefault,
+          },
         }),
         Image,
         FileHandler.configure({
           allowedMimeTypes: [...allowedContentTypes],
           onPaste: (currentEditor, files, htmlContent) => {
             files.forEach(async (file) => {
+              // @todo enable passing file id to upload image (must be uuid, verify on server & prevent overwrites)
+              // this would be nice for loading states, instead of waiting a minute to see your image
+
+              // @todo edit alt for images
+              // https://angelika.me/2023/02/26/how-to-add-editing-image-alt-text-tiptap/
               const uploadResult = await uploadImage({ file });
               if (uploadResult) {
                 currentEditor

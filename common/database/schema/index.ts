@@ -6,7 +6,7 @@ export const pads = t.pgTable("pads", {
   id: t.uuid().notNull().defaultRandom().primaryKey(),
 
   name: t.varchar({ length: 256 }).notNull(),
-  description: t.varchar({ length: 1000 }).notNull().default(""),
+  description: t.varchar({ length: 500 }).notNull().default(""),
   // supposedly keywords don't have an impact on seo anymore
   // this will be a comma separated list (5 tags, each can be 30 chars long)
   tags: t.varchar({ length: 150 }),

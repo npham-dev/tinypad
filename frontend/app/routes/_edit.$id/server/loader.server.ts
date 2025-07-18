@@ -13,6 +13,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       .select({
         name: pads.name,
         description: pads.description,
+        tags: pads.tags,
         password: pads.password,
         public: pads.public,
       })

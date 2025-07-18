@@ -1,8 +1,8 @@
 import { Heading, Surface, Text, View } from "natmfat";
 import { cn } from "natmfat/lib/cn";
 
-export const DEFAULT_PROJECT_HEADING = "My first website";
-export const DEFAULT_PROJECT_BODY = "Say hello to the world!";
+export const DEFAULT_PROJECT_NAME = "My first tinypad";
+export const DEFAULT_PROJECT_DESCRIPTION = "Say hello to the world!";
 
 type PreviewSkeletonProps = {
   variant: "top" | "bottom";
@@ -56,10 +56,10 @@ export function Preview(props: PreviewProps) {
           size="subheadDefault"
           className="font-regular text-primary-stronger"
         >
-          {props.name || DEFAULT_PROJECT_HEADING}
+          {props.name || DEFAULT_PROJECT_NAME}
         </Heading>
         <Text color="dimmer" maxLines={1}>
-          {props.description || DEFAULT_PROJECT_BODY}
+          {props.description || DEFAULT_PROJECT_DESCRIPTION}
         </Text>
       </View>
     </Surface>

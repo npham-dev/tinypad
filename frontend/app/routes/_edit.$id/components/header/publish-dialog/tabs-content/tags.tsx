@@ -8,7 +8,52 @@ import {
   useCallback,
   useEffect,
   useRef,
+  useState,
 } from "react";
+import { MaxLengthText } from "~/components/max-length-text";
+import { TabsContent } from "../tabs";
+
+const MAX_TAGS = 5;
+
+export function TagsTabContent() {
+  const [tags, setTags] = useState<string[]>([]);
+
+  return (
+    <TabsContent value="tags">
+      <View className="flex-row items-center justify-between">
+        <Text>Tags help others find your work on the web.</Text>
+        <MaxLengthText length={tags.length} maxLength={MAX_TAGS} />
+      </View>
+      <View className="flex-row flex-wrap gap-2">
+        {tags.map((tag) => (
+          <Tag
+            key={tag}
+            name={tag}
+            onClose={() => {
+              setTags((prevTags) =>
+                prevTags.filter((currentTag) => currentTag !== tag),
+              );
+            }}
+          />
+        ))}
+        <TagInput
+          onKeyDown={(e) => {
+            const target = e.target as HTMLInputElement;
+            const fmtTagValue = target.value.trim();
+            if (e.key === "Enter" && !tags.includes(fmtTagValue)) {
+              setTags((prevTags) => [...prevTags, fmtTagValue]);
+              target.value = "";
+            } else if (e.key === "Backspace" && target.value.length === 0) {
+              setTags((prevTags) =>
+                prevTags.filter((_, i) => i < prevTags.length - 1),
+              );
+            }
+          }}
+        />
+      </View>
+    </TabsContent>
+  );
+}
 
 export function Tag({ name, onClose }: { name: string; onClose: () => void }) {
   return (
