@@ -34,11 +34,7 @@ const toastFailed = () =>
     description: "Failed to upload image",
   });
 
-export async function uploadImage(args: { file?: File }) {
-  if (!args.file) {
-    return undefined;
-  }
-
+export async function uploadImage(args: { file: File }) {
   const generateResult = await tryCatch<Response>(
     fetch("/api/generateSignedPolicy", {
       method: "POST",

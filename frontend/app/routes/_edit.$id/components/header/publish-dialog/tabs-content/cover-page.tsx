@@ -6,18 +6,30 @@ import {
   View,
   VisuallyHidden,
 } from "natmfat";
-import { useRef } from "react";
-import { useEmitter } from "~/routes/_edit.$id/hooks/use-emitter";
+import { useSnapshot } from "valtio";
+import { useFileInput } from "~/routes/_edit.$id/hooks/use-file-input";
 import { allowedContentTypes } from "~/routes/api.generateSignedPolicy/action-schema";
-import { TabsContent, tabsEmitter } from "../tabs";
+import { TabsContent, tabsStore, useTabsEmitterSubmit } from "../tabs";
+import { uploadImage } from "../utils";
 
 export function CoverPageTabsContent() {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const { inputRef, getFile, resetFile } = useFileInput();
+  const snap = useSnapshot(tabsStore);
 
-  useEmitter(tabsEmitter, "submit", ({ tab }) => {
-    if (tab !== "cover_page") {
-      return;
-    }
+  useTabsEmitterSubmit({
+    tab: "cover_page",
+    onSubmit: async () => {
+      const file = getFile();
+
+      return {
+        coverImage:
+          snap.coverImage === null
+            ? null
+            : file
+              ? await uploadImage({ file })
+              : undefined,
+      };
+    },
   });
 
   return (
@@ -33,7 +45,15 @@ export function CoverPageTabsContent() {
           <RiImageIcon />
           Upload an image
         </Button>
-        <Button variant="outline" className="flex-1" disabled>
+        <Button
+          variant="outline"
+          className="flex-1"
+          disabled={!snap.coverImage}
+          onClick={() => {
+            tabsStore.coverImage = null;
+            resetFile();
+          }}
+        >
           <RiDeleteBinIcon />
           Remove image
         </Button>
@@ -45,15 +65,25 @@ export function CoverPageTabsContent() {
           accept={allowedContentTypes.join(",")}
           ref={inputRef}
           onChange={() => {
-            console.log("hey hye");
+            const file = getFile();
+            if (!file) {
+              return;
+            }
+
+            if (tabsStore.coverImage) {
+              URL.revokeObjectURL(tabsStore.coverImage);
+            }
+            tabsStore.coverImage = URL.createObjectURL(file);
           }}
         />
       </VisuallyHidden.Root>
 
-      <img
-        src="/favicon.svg"
-        className="border-outline-dimmest aspect-video w-full border object-cover"
-      />
+      {snap.coverImage ? (
+        <img
+          src={snap.coverImage}
+          className="border-outline-dimmest aspect-video w-full border object-cover"
+        />
+      ) : null}
     </TabsContent>
   );
 }

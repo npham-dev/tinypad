@@ -42,17 +42,21 @@ export async function action({ request, params }: Route.ActionArgs) {
       });
     }
 
-    // delete icon or cover if provided
+    // @todo delete previous icon or cover if provided
+
+    const nextPad = {
+      ...submissionResult.data,
+      name: submissionResult.data.title,
+      tags: fmtTags(submissionResult.data.tags),
+    };
+    if (isEmpty(nextPad)) {
+      return standardResponse({
+        message: "Empty submission data, no changes necessary",
+      });
+    }
 
     const updateResult = await tryCatch(
-      db
-        .update(pads)
-        .set({
-          ...submissionResult.data,
-          name: submissionResult.data.title,
-          tags: fmtTags(submissionResult.data.tags),
-        })
-        .where(eq(pads.id, params.id)),
+      db.update(pads).set(nextPad).where(eq(pads.id, params.id)),
     );
     if (updateResult.error !== null) {
       log.error(updateResult.error);
@@ -65,6 +69,19 @@ export async function action({ request, params }: Route.ActionArgs) {
     return standardResponse({ message: "Successfully updated pad" });
   }
   throw notFound();
+}
+
+/**
+ * Is an object empty?
+ * Useful for determining if a trip to the db is necessary
+ * @param obj
+ * @returns
+ */
+function isEmpty(obj: Record<string, unknown>): boolean {
+  return (
+    Object.values(obj).filter((value) => typeof value !== "undefined")
+      .length === 0
+  );
 }
 
 function fmtTags(tags: string[] | undefined) {

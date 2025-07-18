@@ -6,29 +6,27 @@ import {
   View,
   VisuallyHidden,
 } from "natmfat";
-import { useCallback, useRef } from "react";
 import { useSnapshot } from "valtio";
+import { useFileInput } from "~/routes/_edit.$id/hooks/use-file-input";
 import { allowedContentTypes } from "~/routes/api.generateSignedPolicy/action-schema";
 import { TabsContent, tabsStore, useTabsEmitterSubmit } from "../tabs";
 import { uploadImage } from "../utils";
 
 export function IconTabsContent() {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const { inputRef, getFile, resetFile } = useFileInput();
   const snap = useSnapshot(tabsStore);
-
-  const getFile = useCallback(
-    () => (inputRef.current?.files || [])[0],
-    [inputRef],
-  );
 
   useTabsEmitterSubmit({
     tab: "icon",
     onSubmit: async () => {
+      const file = getFile();
       return {
         iconImage:
-          snap.iconImage === null
+          tabsStore.iconImage === null
             ? null
-            : await uploadImage({ file: getFile() }),
+            : file
+              ? await uploadImage({ file })
+              : undefined,
       };
     },
   });
@@ -55,9 +53,7 @@ export function IconTabsContent() {
               URL.revokeObjectURL(tabsStore.iconImage);
             }
             tabsStore.iconImage = null;
-            if (inputRef.current) {
-              inputRef.current.value = "";
-            }
+            resetFile();
           }}
         >
           <RiDeleteBinIcon />
@@ -71,10 +67,15 @@ export function IconTabsContent() {
           accept={allowedContentTypes.join(",")}
           ref={inputRef}
           onChange={() => {
+            const file = getFile();
+            if (!file) {
+              return;
+            }
+
             if (tabsStore.iconImage) {
               URL.revokeObjectURL(tabsStore.iconImage);
             }
-            tabsStore.iconImage = URL.createObjectURL(getFile());
+            tabsStore.iconImage = URL.createObjectURL(file);
           }}
         />
       </VisuallyHidden.Root>

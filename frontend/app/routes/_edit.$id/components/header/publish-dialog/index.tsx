@@ -22,7 +22,6 @@ import {
 import { tokens } from "natmfat/lib/tokens";
 import { Fragment, useCallback, useState } from "react";
 import { useSnapshot } from "valtio";
-import { useEmitter } from "~/routes/_edit.$id/hooks/use-emitter";
 import { Preview, PreviewSkeleton } from "./preview";
 import {
   SyncTabsStore,
@@ -52,12 +51,6 @@ export function PublishDialog() {
   );
 
   const [open, setOpen] = useState(false);
-
-  useEmitter(
-    tabsEmitter,
-    "close",
-    useCallback(() => setOpen(false), []),
-  );
 
   return (
     <Dialog
@@ -149,6 +142,9 @@ export function PublishDialog() {
                   }}
                   onClick={() => {
                     submitTab();
+                    setOpen(false);
+                    // confetti
+                    // open share link
                   }}
                   type="submit"
                 >

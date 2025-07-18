@@ -19,7 +19,8 @@ type TabsStore = {
   name: string;
   description: string;
   iconImage: string | null;
-  // we don't have tags or coverImage in here bc we don't need it
+  coverImage: string | null;
+  // we don't have tags  in here bc we don't need it
   // preview doesn't use it
 };
 
@@ -28,6 +29,7 @@ export const tabsStore = proxy<TabsStore>({
   name: "",
   description: "",
   iconImage: null,
+  coverImage: null,
 });
 
 export const tabsEmitter = mitt<{
@@ -109,6 +111,7 @@ export function SyncTabsStore(props: { children?: React.ReactNode }) {
     tabsStore.name = pad.name;
     tabsStore.description = pad.description;
     tabsStore.iconImage = pad.iconImage;
-  }, [pad.name, pad.description]);
+    tabsStore.coverImage = pad.coverImage;
+  }, [pad.name, pad.description, pad.iconImage, pad.coverImage]);
   return <>{props.children}</>;
 }
