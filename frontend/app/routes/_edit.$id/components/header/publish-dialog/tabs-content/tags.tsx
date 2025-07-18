@@ -10,13 +10,23 @@ import {
   useRef,
   useState,
 } from "react";
+import { useLoaderData } from "react-router";
 import { MaxLengthText } from "~/components/max-length-text";
-import { TabsContent } from "../tabs";
+import type { loader } from "~/routes/_edit.$id/server/loader.server";
+import { TabsContent, useTabsEmitterSubmit } from "../tabs";
 
 const MAX_TAGS = 5;
 
 export function TagsTabContent() {
-  const [tags, setTags] = useState<string[]>([]);
+  const { pad } = useLoaderData<typeof loader>();
+  const [tags, setTags] = useState<string[]>(pad.tags);
+
+  // @todo isDirty ref
+
+  useTabsEmitterSubmit({
+    tab: "tags",
+    onSubmit: () => ({ tags }),
+  });
 
   return (
     <TabsContent value="tags">

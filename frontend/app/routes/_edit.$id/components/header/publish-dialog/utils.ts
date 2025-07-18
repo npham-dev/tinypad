@@ -2,24 +2,21 @@ import { tryCatch } from "common/lib/try-catch";
 import { toast } from "natmfat";
 import type z from "zod";
 import type { StandardResponse } from "~/lib/response";
-import type { updatePadSchema } from "~/routes/_edit.$id/server/action-schema";
+import type { updatePadSchema } from "~/routes/api.pad.$id/action-schema";
+
+export async function publishPad() {}
 
 export async function updatePad(args: {
   formData: z.infer<typeof updatePadSchema>;
-  action: string;
+  padId: string;
 }) {
-  const formData = new FormData();
-  formData.append("intent", "update");
-  for (const [key, value] of Object.entries(args.formData)) {
-    if (typeof value !== "undefined") {
-      formData.append(key, String(value));
-    }
-  }
-
   const responseResult = await tryCatch(
-    fetch(args.action, {
+    fetch(`/api/pad/${args.padId}`, {
       method: "POST",
-      body: formData,
+      body: JSON.stringify(args.formData),
+      headers: {
+        "Content-Type": "application/json",
+      },
     }),
   );
   if (responseResult.error !== null || responseResult.data.status !== 200) {
@@ -37,7 +34,11 @@ const toastFailed = () =>
     description: "Failed to upload image",
   });
 
-export async function uploadImage(args: { file: File }) {
+export async function uploadImage(args: { file?: File }) {
+  if (!args.file) {
+    return undefined;
+  }
+
   const generateResult = await tryCatch<Response>(
     fetch("/api/generateSignedPolicy", {
       method: "POST",

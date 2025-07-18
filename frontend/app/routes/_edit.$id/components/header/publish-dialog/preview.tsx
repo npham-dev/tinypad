@@ -1,5 +1,7 @@
 import { Heading, Surface, Text, View } from "natmfat";
 import { cn } from "natmfat/lib/cn";
+import { useSnapshot } from "valtio";
+import { tabsStore } from "./tabs";
 
 export const DEFAULT_PROJECT_NAME = "My first tinypad";
 export const DEFAULT_PROJECT_DESCRIPTION = "Say hello to the world!";
@@ -34,16 +36,16 @@ export function PreviewSkeleton(props: PreviewSkeletonProps) {
   );
 }
 
-type PreviewProps = {
-  name?: string;
-  description?: string;
-};
+export function Preview() {
+  const snap = useSnapshot(tabsStore);
 
-export function Preview(props: PreviewProps) {
   return (
     <Surface className="w-full gap-2 p-3" elevated>
       <View className="flex-row items-center gap-3">
-        <img src="/favicon.svg" className="h-8 w-8" />
+        <img
+          src={snap.iconImage || "/favicon.svg"}
+          className="border-outline-dimmest h-8 w-8 border"
+        />
         <View>
           <Text>Tinypad</Text>
           <Text size="small" color="dimmer">
@@ -56,10 +58,10 @@ export function Preview(props: PreviewProps) {
           size="subheadDefault"
           className="font-regular text-primary-stronger"
         >
-          {props.name || DEFAULT_PROJECT_NAME}
+          {snap.name || DEFAULT_PROJECT_NAME}
         </Heading>
         <Text color="dimmer" maxLines={1}>
-          {props.description || DEFAULT_PROJECT_DESCRIPTION}
+          {snap.description || DEFAULT_PROJECT_DESCRIPTION}
         </Text>
       </View>
     </Surface>

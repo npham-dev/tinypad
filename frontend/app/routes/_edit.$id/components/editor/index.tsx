@@ -64,6 +64,8 @@ export const Editor = () => {
               // @todo enable passing file id to upload image (must be uuid, verify on server & prevent overwrites)
               // this would be nice for loading states, instead of waiting a minute to see your image
 
+              // @todo loading states for images pls
+
               // @todo edit alt for images
               // https://angelika.me/2023/02/26/how-to-add-editing-image-alt-text-tiptap/
               const uploadResult = await uploadImage({ file });

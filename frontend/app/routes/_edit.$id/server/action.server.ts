@@ -1,61 +1,83 @@
 import type { Route } from "../+types";
 
-import { parseWithZod } from "@conform-to/zod";
+import {
+  unstable_coerceFormValue as coerceFormValue,
+  parseWithZod,
+} from "@conform-to/zod";
 import bcrypt from "bcrypt";
 import { db } from "common/database";
 import { pads } from "common/database/schema";
 import { tryCatch } from "common/lib/try-catch";
 import { eq } from "drizzle-orm";
 import { notFound, standardResponse, StatusCode } from "~/lib/response";
-import { updatePadSchema } from "./action-schema";
+import { createAccessControl } from "~/services/access-control.server";
+import { logger } from "~/services/logger.server";
+import { renamePadSchema } from "./action-schema";
 
-function hashPassword(password: string | undefined) {
-  if (typeof password === "string") {
-    return password.length === 0
-      ? Promise.resolve(null)
-      : bcrypt.hash(password, 10);
-  }
-  return Promise.resolve(undefined);
-}
+const log = logger.child({ module: "_edit.$id" });
 
 export async function action({ request, params }: Route.ActionArgs) {
+  const ac = await createAccessControl(request);
+  if (!(await ac.canManagePad(params.id))) {
+    return standardResponse({
+      message: "Unauthorized",
+      status: StatusCode.UNAUTHORIZED,
+    });
+  }
+
   const formData = await request.formData();
   switch (formData.get("intent")) {
-    case "update": {
-      const submission = parseWithZod(formData, { schema: updatePadSchema });
+    // I'm thinking actions should have an intent based on where they are used, not on what they do
+    // similar to Next.js actions?
+    case "rename_popover": {
+      const submission = parseWithZod(formData, {
+        schema: coerceFormValue(renamePadSchema, {
+          defaultCoercion: {
+            string(value) {
+              // https://conform.guide/api/zod/coerceFormValue
+              // empty string values are meaningful here
+              if (typeof value !== "string") {
+                return value;
+              }
+              return value.trim();
+            },
+          },
+        }),
+        disableAutoCoercion: true,
+      });
       if (submission.status !== "success") {
-        return submission.reply();
+        return standardResponse({
+          message: "Invalid form data",
+          status: StatusCode.BAD_REQUEST,
+        });
       }
 
       const passwordResult = await tryCatch(
         hashPassword(submission.value.password),
       );
       if (passwordResult.error !== null) {
+        log.error(passwordResult.error);
         return standardResponse({
           message: "Failed to hash password",
           status: StatusCode.INTERNAL_SERVER_ERROR,
         });
       }
 
-      // @todo check auth
-
       const updateResult = await tryCatch(
         db
           .update(pads)
           .set({
-            ...submission.value,
             name: submission.value.title,
+            description: submission.value.description,
+            public: submission.value.privacy === "public",
             password: passwordResult.data,
-            public:
-              typeof submission.value.privacy === "undefined"
-                ? undefined
-                : submission.value.privacy === "public",
           })
           .where(eq(pads.id, params.id)),
       );
       if (updateResult.error !== null) {
+        log.error(updateResult.error);
         return standardResponse({
-          message: "Failed to update pad",
+          message: "Failed to name pad",
           status: StatusCode.INTERNAL_SERVER_ERROR,
         });
       }
@@ -65,4 +87,14 @@ export async function action({ request, params }: Route.ActionArgs) {
   }
 
   throw notFound();
+}
+
+function hashPassword(password: string | undefined) {
+  if (!password) {
+    return Promise.resolve(undefined);
+  }
+  const fmtPassword = password.trim();
+  return fmtPassword.length === 0
+    ? Promise.resolve(undefined)
+    : bcrypt.hash(fmtPassword, 10);
 }

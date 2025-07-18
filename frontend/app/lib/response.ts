@@ -7,23 +7,23 @@ export enum StatusCode {
 }
 
 export function notFound() {
-  return new Response(null, {
+  return standardResponse({
+    message: "Not found",
     status: StatusCode.NOT_FOUND,
-    statusText: "Not found",
   });
 }
 
 export function internalServerError() {
-  return new Response(null, {
+  return standardResponse({
+    message: "Internal server error",
     status: StatusCode.INTERNAL_SERVER_ERROR,
-    statusText: "Internal server error",
   });
 }
 
 export function notAuthorized() {
-  return new Response(null, {
+  return standardResponse({
+    message: "Unathorized",
     status: StatusCode.UNAUTHORIZED,
-    statusText: "Unathorized",
   });
 }
 
@@ -45,3 +45,5 @@ export type StandardResponse<T = unknown> = {
   data?: T;
   status: StatusCode;
 };
+
+// @todo is standard response

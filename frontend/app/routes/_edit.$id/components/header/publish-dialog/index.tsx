@@ -24,7 +24,13 @@ import { Fragment, useCallback, useState } from "react";
 import { useSnapshot } from "valtio";
 import { useEmitter } from "~/routes/_edit.$id/hooks/use-emitter";
 import { Preview, PreviewSkeleton } from "./preview";
-import { TABS, tabsEmitter, tabsStore, type TabValue } from "./tabs";
+import {
+  SyncTabsStore,
+  TABS,
+  tabsEmitter,
+  tabsStore,
+  type TabValue,
+} from "./tabs";
 import { BasicsTabContent } from "./tabs-content/basics";
 import { CoverPageTabsContent } from "./tabs-content/cover-page";
 import { IconTabsContent } from "./tabs-content/icon";
@@ -38,9 +44,12 @@ export function PublishDialog() {
   const index = TABS.indexOf(tab);
   const snap = useSnapshot(tabsStore);
 
-  const submitTab = useCallback(() => {
-    tabsEmitter.emit("submit", { tab: TABS[index] });
-  }, [index]);
+  const submitTab = useCallback(
+    (tab?: TabValue) => {
+      tabsEmitter.emit("submit", { tab: tab || TABS[index] });
+    },
+    [index],
+  );
 
   const [open, setOpen] = useState(false);
 
@@ -79,11 +88,18 @@ export function PublishDialog() {
         <View className="flex-row">
           <Surface elevated className="relative w-2/5 gap-2 p-4">
             <Heading size="headerDefault">Publish your Tinypad</Heading>
+            <SyncTabsStore />
             <Tabs
               variant="progress"
               value={tab}
-              onValueChange={(nextTab) => setTab(nextTab as TabValue)}
+              onValueChange={(nextTab) =>
+                setTab((prevTab) => {
+                  submitTab(prevTab);
+                  return nextTab as TabValue;
+                })
+              }
               className="h-full flex-1"
+              key={String(open)}
             >
               <TabsList>
                 {TABS.map((tab, i) => (
@@ -150,7 +166,7 @@ export function PublishDialog() {
             <Text color="dimmer">Preview</Text>
             <View className="pointer-events-none select-none gap-6 px-10">
               <PreviewSkeleton variant="bottom" />
-              <Preview name={snap.name} description={snap.description} />
+              <Preview />
               <PreviewSkeleton variant="top" />
             </View>
           </Surface>

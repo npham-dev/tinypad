@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 
-export function useDirty(args: { resetKey: unknown }) {
+export function useDirty(args: { resetKey?: unknown } = {}) {
   const dirty = useRef(false);
 
   const handleInput = useCallback(() => {

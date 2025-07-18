@@ -64,7 +64,7 @@ export function RenamePopover() {
           reloadDocument={false}
           className="flex w-80 flex-col gap-3"
         >
-          <input type="hidden" name="intent" value="update" />
+          <input type="hidden" name="intent" value="rename_popover" />
           <LabeledInput
             label="Name"
             placeholder="Name your pad"

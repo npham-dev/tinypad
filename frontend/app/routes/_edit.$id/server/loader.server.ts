@@ -16,6 +16,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
         tags: pads.tags,
         password: pads.password,
         public: pads.public,
+        iconImage: pads.iconImage,
+        coverImage: pads.coverImage,
       })
       .from(pads)
       .where(eq(pads.id, params.id)),
@@ -36,6 +38,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       token: ac.getToken(),
       pad: {
         ...pad,
+        tags: pad.tags?.split(",") || [],
         password: !!pad.password,
       },
     };
