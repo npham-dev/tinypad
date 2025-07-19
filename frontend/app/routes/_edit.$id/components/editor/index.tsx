@@ -7,6 +7,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import FileHandler from "@tiptap/extension-file-handler";
 import Image from "@tiptap/extension-image";
+import { CharacterCount } from "@tiptap/extensions";
 import { omit } from "common/lib/transform";
 import { tokens } from "natmfat/lib/tokens";
 import { useEffect, useState } from "react";
@@ -48,6 +49,7 @@ export const Editor = () => {
       extensions: [
         RichTextLink,
         TextStyleKit,
+        CharacterCount,
         StarterKit.configure({
           // https://tiptap.dev/docs/collaboration/getting-started/install
           undoRedo: false,

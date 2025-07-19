@@ -5,6 +5,7 @@ import { useUser } from "../../hooks/use-user";
 import { editorStore, Status } from "../../stores/editor-store";
 import { Notifications } from "./notifications";
 import { StatusAction } from "./status";
+import { WordCount } from "./word-count";
 
 export const StatusBar = () => {
   const snap = useSnapshot(editorStore);
@@ -22,6 +23,7 @@ export const StatusBar = () => {
         </StatusAction>
       </View>
       <View className="flex-row">
+        <WordCount />
         <StatusAction>
           {snap.status === Status.CONNECTED ? (
             <>
