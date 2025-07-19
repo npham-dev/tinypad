@@ -6,6 +6,9 @@ import type { loader } from "./server/loader.server";
 
 export { loader } from "./server/loader.server";
 
+// @todo actually use cover image/icon image for favicon
+// maybe render title/description as well?
+
 export const meta: Route.MetaFunction = ({ data }) => {
   if (!data) {
     return [

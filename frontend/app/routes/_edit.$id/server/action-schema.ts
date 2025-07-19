@@ -13,3 +13,7 @@ export const renamePadSchema = z.object({
   privacy: z.enum(["public", "private"]),
   password: z.string().max(80).optional(),
 });
+
+export const loginSchema = z.object({
+  password: z.string({ message: "A password is required" }),
+});

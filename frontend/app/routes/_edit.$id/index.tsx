@@ -2,9 +2,12 @@ import { Surface, View } from "natmfat";
 import { ClientOnly } from "remix-utils/client-only";
 import type { Route } from "./+types";
 
+import { useLoaderData } from "react-router";
 import { Editor } from "./components/editor";
 import { Header } from "./components/header";
+import { NotAuthorized } from "./components/not-authorized";
 import { StatusBar } from "./components/status-bar";
+import type { loader } from "./server/loader.server";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -49,7 +52,9 @@ export { loader } from "./server/loader.server";
 // @todo password stuff
 
 export default function Page() {
-  return (
+  const { authorized } = useLoaderData<typeof loader>();
+
+  return authorized ? (
     <View className="h-screen">
       <Header />
       <View className="relative h-full flex-1 flex-row gap-2 overflow-hidden">
@@ -69,8 +74,9 @@ export default function Page() {
           </Surface>
         </View>
       </View>
-
       <StatusBar />
     </View>
+  ) : (
+    <NotAuthorized />
   );
 }
