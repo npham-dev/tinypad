@@ -16,7 +16,7 @@ export const pads = t.pgTable("pads", {
   public: t.boolean().default(true).notNull(),
 
   publishedSlug: t.uuid().notNull().defaultRandom(),
-  publishedContent: t.jsonb(), // fully rendered tiptap pad
+  publishedContent: t.varchar(), // fully rendered html tiptap pad
 
   ...timestamp,
 });

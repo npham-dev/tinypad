@@ -26,6 +26,7 @@ import { useSnapshot } from "valtio";
 import { usePadId } from "~/routes/_edit.$id/hooks/use-pad-id";
 import { editorStore } from "~/routes/_edit.$id/stores/editor-store";
 import { Preview, PreviewSkeleton } from "./preview";
+import { PublishedDialog, publishedDialogEmitter } from "./published-dialog";
 import { SyncTabsStore, TABS, tabsEmitter, type TabValue } from "./tabs";
 import { BasicsTabContent } from "./tabs-content/basics";
 import { CoverPageTabsContent } from "./tabs-content/cover-page";
@@ -41,6 +42,9 @@ export function PublishDialog() {
   const index = TABS.indexOf(tab);
   const padId = usePadId();
 
+  const [open, setOpen] = useState(false);
+  const snap = useSnapshot(editorStore);
+
   const submitTab = useCallback(
     (tab?: TabValue) => {
       tabsEmitter.emit("submit", { tab: tab || TABS[index] });
@@ -48,142 +52,149 @@ export function PublishDialog() {
     [index],
   );
 
-  const [open, setOpen] = useState(false);
-  const snap = useSnapshot(editorStore);
-
   return (
-    <Dialog
-      maxWidth={872}
-      open={open}
-      onOpenChange={(open) => {
-        setOpen(open);
-        if (!open) {
+    <>
+      <Dialog
+        maxWidth={872}
+        open={open}
+        onOpenChange={(open) => {
+          setOpen(open);
           // reset navigation state on close
-          setTab("basics");
-        }
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button>
-          <RiArticleIcon />
-          Publish
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="p-0">
-        <VisuallyHidden.Root>
-          <DialogTitle>Publish your Tinypad</DialogTitle>
-          <DialogDescription>
-            Publish your Tinypad to the world! Publishing creates a read-only
-            website for others to view.
-          </DialogDescription>
-        </VisuallyHidden.Root>
-        <View className="flex-row">
-          <Surface elevated className="relative w-2/5 gap-2 p-4">
-            <Heading size="headerDefault">Publish your Tinypad</Heading>
-            <SyncTabsStore />
-            <Tabs
-              variant="progress"
-              value={tab}
-              onValueChange={(nextTab) =>
-                setTab((prevTab) => {
-                  submitTab(prevTab);
-                  return nextTab as TabValue;
-                })
-              }
-              className="h-full flex-1"
-              key={String(open)}
+          if (!open) {
+            setTab("basics");
+          }
+        }}
+      >
+        <DialogTrigger asChild>
+          <Button>
+            <RiArticleIcon />
+            Publish
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="p-0">
+          <VisuallyHidden.Root>
+            <DialogTitle>Publish your Tinypad</DialogTitle>
+            <DialogDescription>
+              Publish your Tinypad to the world! Publishing creates a read-only
+              website for others to view.
+            </DialogDescription>
+          </VisuallyHidden.Root>
+
+          <View className="flex-row">
+            <Surface elevated className="relative w-2/5 gap-2 p-4">
+              <Heading size="headerDefault">Publish your Tinypad</Heading>
+              <SyncTabsStore />
+              <Tabs
+                variant="progress"
+                value={tab}
+                onValueChange={(nextTab) =>
+                  setTab((prevTab) => {
+                    submitTab(prevTab);
+                    return nextTab as TabValue;
+                  })
+                }
+                className="h-full flex-1"
+                key={String(open)}
+              >
+                <TabsList>
+                  {TABS.map((tab, i) => (
+                    <Fragment key={tab}>
+                      <TabsTrigger value={tab}>
+                        {formatTabTitle(tab)}
+                      </TabsTrigger>
+                      {i !== TABS.length - 1 ? <TabsSeparator /> : null}
+                    </Fragment>
+                  ))}
+                </TabsList>
+                <BasicsTabContent />
+                <TagsTabContent />
+                <IconTabsContent />
+                <CoverPageTabsContent />
+              </Tabs>
+
+              <View className="absolute bottom-0 left-0 w-full flex-row p-4">
+                {index > 0 ? (
+                  <Button
+                    className="self-start"
+                    type="button"
+                    onClick={() => setTab(TABS[index - 1])}
+                  >
+                    <RiArrowLeftIcon /> Back
+                  </Button>
+                ) : null}
+
+                {index < TABS.length - 1 ? (
+                  <Button
+                    color="primary"
+                    className="ml-auto justify-self-end"
+                    type="button"
+                    onClick={() => {
+                      submitTab();
+                      setTab(TABS[index + 1]);
+                    }}
+                  >
+                    Next <RiArrowRightIcon />
+                  </Button>
+                ) : null}
+
+                {index === TABS.length - 1 ? (
+                  <Button
+                    color="primary"
+                    className="border-primary-stronger ml-auto justify-self-end border"
+                    style={{
+                      boxShadow: `0 0 ${tokens.space16} ${tokens.primaryDimmer}`,
+                    }}
+                    onClick={() => {
+                      submitTab();
+                      const content = snap.editor?.getHTML();
+                      if (!content) {
+                        return;
+                      }
+
+                      publishPad({ padId, content });
+                      setOpen(false);
+                      setTab("basics"); // reset navigation b/c onOpenChange won't trigger w/ manual state change
+
+                      publishedDialogEmitter.emit("published");
+
+                      confetti({
+                        angle: 45,
+                        spread: 60,
+                        particleCount: 100,
+                        origin: { x: 0, y: 0.8 },
+                      });
+                      confetti({
+                        angle: 180 - 45,
+                        spread: 60,
+                        particleCount: 100,
+                        origin: { x: 1, y: 0.8 },
+                      });
+                    }}
+                    type="submit"
+                  >
+                    <RiUploadIcon />
+                    Publish your Tinypad
+                  </Button>
+                ) : null}
+              </View>
+            </Surface>
+
+            <Surface
+              background="root"
+              className="w-full flex-1 overflow-hidden p-4"
             >
-              <TabsList>
-                {TABS.map((tab, i) => (
-                  <Fragment key={tab}>
-                    <TabsTrigger value={tab}>{formatTabTitle(tab)}</TabsTrigger>
-                    {i !== TABS.length - 1 ? <TabsSeparator /> : null}
-                  </Fragment>
-                ))}
-              </TabsList>
-              <BasicsTabContent />
-              <TagsTabContent />
-              <IconTabsContent />
-              <CoverPageTabsContent />
-            </Tabs>
-
-            <View className="absolute bottom-0 left-0 w-full flex-row p-4">
-              {index > 0 ? (
-                <Button
-                  className="self-start"
-                  type="button"
-                  onClick={() => setTab(TABS[index - 1])}
-                >
-                  <RiArrowLeftIcon /> Back
-                </Button>
-              ) : null}
-
-              {index < TABS.length - 1 ? (
-                <Button
-                  color="primary"
-                  className="ml-auto justify-self-end"
-                  type="button"
-                  onClick={() => {
-                    submitTab();
-                    setTab(TABS[index + 1]);
-                  }}
-                >
-                  Next <RiArrowRightIcon />
-                </Button>
-              ) : null}
-
-              {index === TABS.length - 1 ? (
-                <Button
-                  color="primary"
-                  className="border-primary-stronger ml-auto justify-self-end border"
-                  style={{
-                    boxShadow: `0 0 ${tokens.space16} ${tokens.primaryDimmer}`,
-                  }}
-                  onClick={() => {
-                    submitTab();
-                    const content = snap.editor?.getHTML();
-                    if (!content) {
-                      return;
-                    }
-                    publishPad({ padId, content });
-                    setOpen(false);
-                    setTab("basics"); // onOpenChange won't trigger w/ manual state changes
-                    confetti({
-                      angle: 45,
-                      spread: 60,
-                      particleCount: 100,
-                      origin: { x: 0, y: 1 },
-                    });
-                    confetti({
-                      angle: 180 - 45,
-                      spread: 60,
-                      particleCount: 100,
-                      origin: { x: 1, y: 1 },
-                    });
-                  }}
-                  type="submit"
-                >
-                  <RiUploadIcon />
-                  Publish your Tinypad
-                </Button>
-              ) : null}
-            </View>
-          </Surface>
-
-          <Surface
-            background="root"
-            className="w-full flex-1 overflow-hidden p-4"
-          >
-            <Text color="dimmer">Preview</Text>
-            <View className="pointer-events-none select-none gap-6 px-10">
-              <PreviewSkeleton variant="bottom" />
-              <Preview />
-              <PreviewSkeleton variant="top" />
-            </View>
-          </Surface>
-        </View>
-      </DialogContent>
-    </Dialog>
+              <Text color="dimmer">Preview</Text>
+              <View className="pointer-events-none select-none gap-6 px-10">
+                <PreviewSkeleton variant="bottom" />
+                <Preview />
+                <PreviewSkeleton variant="top" />
+              </View>
+            </Surface>
+          </View>
+        </DialogContent>
+      </Dialog>
+      <PublishedDialog />
+    </>
   );
 }
 

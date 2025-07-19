@@ -18,6 +18,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
         public: pads.public,
         iconImage: pads.iconImage,
         coverImage: pads.coverImage,
+        publishedSlug: pads.publishedSlug,
       })
       .from(pads)
       .where(eq(pads.id, params.id)),
