@@ -14,7 +14,7 @@ import {
   type ButtonGroupProps,
 } from "natmfat";
 import { tokens } from "natmfat/lib/tokens";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Form, useLoaderData } from "react-router";
 import {
   LabeledInput,
@@ -38,8 +38,18 @@ export function RenamePopover() {
     shouldRevalidate: "onInput",
   });
 
+  // required for some weird ass bug?
+  // not sure if this is radix ui's fault but
+  // 1. auto focusing on the input
+  // 2. clicking outside to close the popover
+  // triggers a form submit, regardless of the js on that form (like e.preventDefault())
+  useEffect(() => {
+    formRef.current?.focus();
+  }, [open]);
+
   return (
     <Popover
+      open={open}
       onOpenChange={(open) => {
         setOpen(open);
         if (!open && dirty.current) {
@@ -47,7 +57,7 @@ export function RenamePopover() {
         }
       }}
     >
-      <PopoverTrigger>
+      <PopoverTrigger type="button">
         <Interactive variant="fill">
           <View className="h-8 flex-row items-center gap-1 px-2">
             <Text>{pad.name}</Text>
@@ -57,11 +67,11 @@ export function RenamePopover() {
       </PopoverTrigger>
       <PopoverContent align="start">
         <Form
+          tabIndex={0}
           ref={formRef}
           method="post"
           id={form.id}
           onSubmit={form.onSubmit}
-          reloadDocument={false}
           className="flex w-80 flex-col gap-3"
         >
           <input type="hidden" name="intent" value="rename_popover" />
